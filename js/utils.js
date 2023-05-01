@@ -1,14 +1,21 @@
 function checkClicked(x, y, targetX, targetY, radius) {
-  return Math.abs(x - targetX) <= radius && Math.abs(y - targetY) <= radius;
+  if(Math.sqrt(Math.pow(x - targetX, 2) + Math.pow(y - targetY, 2)) <= 2 * radius){
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function getClicked(event, graph = new Graph(), radius = 50) {
-  let x = event.targetX + event.clientX;
-  let y = event.targetY + event.clientY;
+function getClicked(event, graph , radius = 50) {
 
-  graph.states.forEach((state) => {
-    if (checkClicked(x, y, state.x, state.y, radius)) return state;
-  });
+  let x =  event.clientX - canva.offsetLeft;
+  let y = event.clientY - canva.offsetTop; 
+
+  for(let i=0 ; i < graph.states.length ; i++){
+    if(checkClicked(x, y, graph.states[i].x , graph.states[i].y ,radius )) {
+      return graph.states[i] ;
+    }
+  }
 
   return null;
 }

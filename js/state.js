@@ -16,6 +16,7 @@ class State {
   }
 
   drawLineTo(context, state) {
+    context.beginPath();
     context.moveTo(this.x, this.y);
     context.lineTo(state.x, state.y);
     context.stroke();

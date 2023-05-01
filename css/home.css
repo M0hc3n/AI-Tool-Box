@@ -217,8 +217,8 @@
   transition: all 0.5s ease;
   overflow: hidden;
   display: flex;
-  align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 .sidebar.close ~ .home-section{
   left: 78px;
@@ -228,11 +228,13 @@
   height: 60px;
   display: flex;
   align-items: center;
+  text-align: left;
 }
 .home-section .home-content .bx-menu,
 .home-section .home-content .text{
   color: #11101d;
   font-size: 35px;
+  text-align: left;
 }
 .home-section .home-content .bx-menu{
   margin: 0 15px;
@@ -267,4 +269,6 @@
   border: 1px solid black;
   width: 80%;
   height: 80%;
+  margin-left: 100px;
+
 }

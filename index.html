@@ -13,6 +13,7 @@
     <script src="js/graph.js"></script>
     <script src="js/index.js" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Tool Box</title>
   </head>
   <body">
     <div class="sidebar close">
@@ -64,6 +65,10 @@
     </div>
 
     <div class="home-section">
+      <div class="home-content">
+        <i class='bx bx-menu' ></i>
+        <span class="text">Drop Down Sidebar</span>
+      </div>
       <canvas id="graph-area"> </canvas>
     </div>
 
@@ -77,7 +82,6 @@
       }
       let sidebar = document.querySelector(".sidebar");
       let sidebarBtn = document.querySelector(".bx-menu");
-      console.log(sidebarBtn);
       sidebarBtn.addEventListener("click", () => {
         sidebar.classList.toggle("close");
       });

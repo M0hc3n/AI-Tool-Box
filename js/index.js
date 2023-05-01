@@ -14,8 +14,8 @@ context.canvas.width = window.innerWidth;
 context.canvas.height = window.innerHeight;
 
 function drawState(event) {
-  let x = event.target.offsetLeft + event.clientX;
-  let y = event.target.offsetTop + event.clientY;
+  let x = event.clientX - canva.getBoundingClientRect().left ;
+  let y =  event.clientY - canva.getBoundingClientRect().top ;
 
   let label = prompt("Set State Label");
   let state = new State(x, y, label);
@@ -28,7 +28,7 @@ function drawState(event) {
 
 function on_click(event) {
 
-  console.log(graph.states)
+  event.stopPropagation();
 
   current_state = getClicked(event, graph, radius);
 
