@@ -215,6 +215,10 @@
   left: 260px;
   width: calc(100% - 260px);
   transition: all 0.5s ease;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .sidebar.close ~ .home-section{
   left: 78px;
@@ -257,4 +261,10 @@
     width: 100%;
     left: 0;
   }
+}
+
+#graph-area {
+  border: 1px solid black;
+  width: 80%;
+  height: 80%;
 }
