@@ -6,22 +6,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Graph import CustomGraph
 from best_first_search import Best_First_Search
 from best_first_search import Variants
+import time
 # Graph Creation
 
+class Animation:
+    def __init__(self, algorithm):
+        self.problem = algorithm
+        self.graph = algorithm.problem
 
-# here both graph and Algorithm are classes
-def animation_pop_up(graph, Algorithm):
-
-    graph_dict = graph.get_graph_dict()
-    problem = Algorithm(
-        "A", goal_states=["G"], problem=graph_dict, algorithm=Variants.GREEDY)
-    G = CustomGraph.get_nx_graph()
-    pos = nx.spring_layout(G)
-
-    # Build plot
-    fig, ax = plt.subplots(figsize=(20, 20))
-
-    def get_parent_path(path):
+    def get_parent_path(self, path):
 
         currnet_node = path[-1]
         parent_path = [
@@ -35,11 +28,9 @@ def animation_pop_up(graph, Algorithm):
         return [[node.parent.state if node.parent is not None else node.state,
                  node.state] for node in parent_path]
 
-       # this will return a list of all orederd subset of the expolore set to perform the animation
+    def get_path_history(self):
 
-    def get_path_history(problem):
-
-        path = problem.search()
+        path = self.problem.search()
 
         # Generate animation frames
         path_history = []
@@ -51,9 +42,16 @@ def animation_pop_up(graph, Algorithm):
 
         return path_history
 
-    def update(num, path_history):
-        ax.clear()
+    def node_colors(self, path, unpacked_parent_path):
+        return ['black' if node == self.problem.initial_node else 'yellow'
+                if node.state in self.problem.goal_states
+                else 'violet' if node == path[-1] else 'green'
+                if (path[-1].state in self.problem.goal_states and node.state in unpacked_parent_path)else
+                'blue' if node.state in unpacked_parent_path else 'red' for node in path]
 
+    def update(self, num, path_history, ax, G, pos):
+        ax.clear()
+        graph_dict = self.graph.get_graph_dict()
         # Get the current path and path cost
         path = path_history[num]
 
@@ -65,22 +63,19 @@ def animation_pop_up(graph, Algorithm):
         null_nodes = nx.draw_networkx_nodes(
             G, pos=pos, nodelist=set(G.nodes()), node_color="black", ax=ax, node_size=1200)
 
-        node_labels = CustomGraph.get_node_labeles_heuristic(problem=problem)
+        node_labels = CustomGraph.get_node_labeles_heuristic(
+            problem=graph_dict)
         nx.draw_networkx_labels(G, pos=pos, labels=dict(zip(graph_dict.keys(), node_labels)),
                                 font_color="white", ax=ax, font_size=10, font_family="sans-serif")
         null_nodes.set_edgecolor("black")
 
         # get the parent path so tha we can color the edges and nodes that are visited,not visted and the currently visited node
-        parent_path = get_parent_path(path)
+        parent_path = self.get_parent_path(path)
         unpacked_parent_path = [
             element for trace in parent_path for element in trace]
 
         query_nodes = nx.draw_networkx_nodes(
-            G, pos=pos, nodelist=[node.state for node in path], node_color=['black' if node == problem.initial_node else 'yellow'
-                                                                            if node.state in problem.goal_states
-                                                                            else 'violet' if node == path[-1] else 'green'
-                                                                            if (path[-1].state in problem.goal_states and node.state in unpacked_parent_path)else
-                                                                            'blue' if node.state in unpacked_parent_path else 'red' for node in path],
+            G, pos=pos, nodelist=[node.state for node in path], node_color=self.node_colors(path, unpacked_parent_path),
             ax=ax, node_size=1200)
         query_nodes.set_edgecolor("white")
 
@@ -93,42 +88,50 @@ def animation_pop_up(graph, Algorithm):
 
         # the yellow path from parent
         nx.draw_networkx_edges(G, pos=pos, edgelist=parent_path, width=6, alpha=0.5,  style="dashed",
-                               edge_color=["green" if path[-1].state in problem.goal_states else "blue"], ax=ax)
+                               edge_color=["green" if path[-1].state in self.problem.goal_states else "blue"], ax=ax)
 
         # drawing the costs
         edge_labels = nx.get_edge_attributes(G, "weight")
         nx.draw_networkx_edge_labels(
             G, pos, edge_labels, font_size=10, font_family="sans-serif")
-
-        plt.pause(1)
-
-    # Run the A* search algorithm
-
-    # Create the animation object
-
-    path_history = get_path_history(problem)
-
-    root = tk.Tk()
-    root.geometry("1920x1080")
-
-    # Create a Tkinter canvas
-    canvas = tk.Canvas(root)
-    canvas.pack()
-
-    # Create a Matplotlib figure and attach it to the canvas
-    fig_agg = FigureCanvasTkAgg(fig, master=canvas)
-    # fig_agg.draw()
-    fig_agg.get_tk_widget().pack()
-
-    # Create the animation object
-    ani = animation.FuncAnimation(fig, update, frames=len(
-        path_history), fargs=(path_history,), interval=1000, repeat=True)
-
-    # Start the animation
-    ani.event_source.start()
-
-    # Start the Tkinter event loop
-    root.mainloop()
+        time.sleep(1)
 
 
-animation_pop_up(CustomGraph, Best_First_Search)
+# here both graph and Algorithm are classes
+
+    def animation_pop_up(self):
+        G = self.graph.get_nx_graph()
+        pos = nx.spring_layout(G)
+        # perform the Search algorithm
+        path_history = self.get_path_history()
+
+        # creating the Tkinter Window
+        root = tk.Tk()
+        root.geometry("1920x1080")
+        canvas = tk.Canvas(root)
+        canvas.pack()
+
+        # Create a Matplotlib figure and attach it to the canvas
+        fig, ax = plt.subplots(figsize=(20, 20))
+        fig_agg = FigureCanvasTkAgg(fig, master=canvas)
+        fig_agg.get_tk_widget().pack()
+
+        animate = animation.FuncAnimation(fig, self.update, frames=len(
+            path_history), fargs=(path_history, ax, G, pos), interval=1000, repeat=True)
+        root.mainloop()
+
+
+# this is just for testing purposes
+
+customGraph = {"A": [["B", 2], ["C", 3], 9],  # h(n) to G ,h(n) to F
+               "B": [["A", 2], ["C", 4], ["D", 5], 15],
+               "C": [["A", 3], ["B", 4], ["D", 3], ["F", 6], 13],
+               "D": [["B", 5], ["C", 3], ["E", 2], 6],
+               "E": [["G", 5], ["F", 3], ["D", 2], 4],
+               "F": [["C", 6], ["E", 3], 6],
+               "G": [["E", 5], 0]
+               }
+algo = Best_First_Search(
+    "A", ["F"], problem=CustomGraph(customGraph), algorithm=Variants.GREEDY)
+animate = Animation(algorithm=algo)
+animate.animation_pop_up()
