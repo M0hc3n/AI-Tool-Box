@@ -5,7 +5,7 @@ class CustomGraph:
     def __init__(self, graph):
         if (isinstance(graph, dict)):
             self.graph_dict = graph
-            self.graph_nx = self.__create_nx_graph(graph)
+            self.graph_nx = self.create_nx_graph(graph)
 
     def get_graph_dict(self):
         return self.graph_dict
@@ -13,7 +13,7 @@ class CustomGraph:
     def get_nx_graph(self):
         return self.graph_nx
 
-    def __create_nx_graph(self, graph):
+    def create_nx_graph(self, graph):
         G = nx.Graph()
         G.add_nodes_from(graph.keys())
         for k, v in graph.items():
@@ -22,10 +22,15 @@ class CustomGraph:
         return G
 
     def add_edge(self, node_a_state, node_b_state, weight):
-        pass
+        self.graph_dict[node_a_state].insert([node_b_state, weight])
+        self.graph_dict[node_b_state].insert([node_a_state, weight])
 
     def add_node(self, state, heuristic):
-        pass
+        if (state not in self.graph_dict.keys()):
+            self.graph_dict[state] = [heuristic]
+        else:
+            # since a  node can have multiple heuristics
+            self.graph_dict[state].append(heuristic)
 
     @staticmethod
     def get_node_labeles_heuristic(problem):
