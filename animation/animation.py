@@ -55,20 +55,20 @@ class Animation:
                 if (path[-1].state in self.problem.goal_states and node.state in unpacked_parent_path)else
                 'blue' if node.state in unpacked_parent_path else 'red' for node in path]
 
-    def set_title(self, ax, cost,path):
+    def set_title(self, ax, cost, path):
         title = ""
         if (self.problem.algorithm == Variants.GREEDY):
             title += "GREEDY"
         elif (self.problem.algorithm == Variants.UCS):
             title += "UCS"
-        elif (self.problem == Variants.A_star):
-            title += "A*"
+        elif (self.problem.algorithm == Variants.A_star):
+            title += "A Star"
         title += "\n"
         title += f"->".join(self.get_ordered_nodes(path)[::-1])
         title += "\n"
         title += f"path cost: {cost}"
 
-        ax.set_title(title,fontsize=20)
+        ax.set_title(title, fontsize=20)
 
     def update(self, num, path_history, ax, G, pos):
         ax.clear()
@@ -116,11 +116,12 @@ class Animation:
         nx.draw_networkx_edge_labels(
             G, pos, edge_labels, font_size=10, font_family="sans-serif")
 
-        self.set_title(ax, path[-1].cost,path)
+        self.set_title(ax, path[-1].cost, path)
         time.sleep(1)
 
 
 # here both graph and Algorithm are classes
+
 
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()

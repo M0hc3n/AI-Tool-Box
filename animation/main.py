@@ -12,6 +12,6 @@ if __name__ == "__main__":
                    "G": [["E", 5], 0]
                    }
     algo = Best_First_Search(
-        "A", ["F"], problem=CustomGraph(customGraph), algorithm=Variants.UCS)
+        "A", ["F"], problem=CustomGraph(customGraph), algorithm=Variants.A_star)
     animate = Animation(algorithm=algo)
     animate.animation_pop_up()
