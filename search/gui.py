@@ -1,8 +1,9 @@
 import tkinter as tk
 import networkx as nx
-# import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+
 
 matplotlib.use("tkagg")
 
