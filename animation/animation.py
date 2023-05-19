@@ -5,6 +5,8 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Graph import CustomGraph
 import time
+from best_first_search import Variants
+
 
 class Animation:
     def __init__(self, algorithm):
@@ -15,13 +17,22 @@ class Animation:
 
         currnet_node = path[-1]
         parent_path = [currnet_node]
-        # we propaget from current state to parent
+
         while currnet_node.parent is not None:
             parent_path.append(currnet_node.parent)
             currnet_node = currnet_node.parent
 
         return [[node.parent.state if node.parent is not None else node.state,
                  node.state] for node in parent_path]
+
+    def get_ordered_nodes(self, path):
+        currnet_node = path[-1]
+        parent_path = [currnet_node.state]
+
+        while currnet_node.parent is not None:
+            parent_path.append(currnet_node.parent.state)
+            currnet_node = currnet_node.parent
+        return parent_path
 
     def get_path_history(self):
 
@@ -43,6 +54,21 @@ class Animation:
                 else 'violet' if node == path[-1] else 'green'
                 if (path[-1].state in self.problem.goal_states and node.state in unpacked_parent_path)else
                 'blue' if node.state in unpacked_parent_path else 'red' for node in path]
+
+    def set_title(self, ax, cost,path):
+        title = ""
+        if (self.problem.algorithm == Variants.GREEDY):
+            title += "GREEDY"
+        elif (self.problem.algorithm == Variants.UCS):
+            title += "UCS"
+        elif (self.problem == Variants.A_star):
+            title += "A*"
+        title += "\n"
+        title += f"->".join(self.get_ordered_nodes(path)[::-1])
+        title += "\n"
+        title += f"path cost: {cost}"
+
+        ax.set_title(title,fontsize=20)
 
     def update(self, num, path_history, ax, G, pos):
         ax.clear()
@@ -89,11 +115,12 @@ class Animation:
         edge_labels = nx.get_edge_attributes(G, "weight")
         nx.draw_networkx_edge_labels(
             G, pos, edge_labels, font_size=10, font_family="sans-serif")
+
+        self.set_title(ax, path[-1].cost,path)
         time.sleep(1)
 
 
 # here both graph and Algorithm are classes
-
 
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()
@@ -115,4 +142,3 @@ class Animation:
         animate = animation.FuncAnimation(fig, self.update, frames=len(
             path_history), fargs=(path_history, ax, G, pos), interval=1000, repeat=True)
         root.mainloop()
-

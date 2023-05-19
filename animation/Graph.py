@@ -2,13 +2,6 @@ import networkx as nx
 
 
 class CustomGraph:
-
-    """_summary_
-
-    Returns:
-        _dict_: returns the grph dict representation of a given graph_
-    """
-
     def __init__(self, graph):
         if (isinstance(graph, dict)):
             self.graph_dict = graph
