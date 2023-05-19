@@ -35,6 +35,22 @@ def animation_pop_up(graph, Algorithm):
         return [[node.parent.state if node.parent is not None else node.state,
                  node.state] for node in parent_path]
 
+       # this will return a list of all orederd subset of the expolore set to perform the animation
+
+    def get_path_history(problem):
+
+        path = problem.search()
+
+        # Generate animation frames
+        path_history = []
+        if path is not None:
+            for i in range(len(path)):
+                partial_path = path[:i+1]
+
+                path_history.append(partial_path)
+
+        return path_history
+
     def update(num, path_history):
         ax.clear()
 
@@ -48,9 +64,8 @@ def animation_pop_up(graph, Algorithm):
         # Background nodes and edges(That is the nodes and edges that are not visited yet)
         null_nodes = nx.draw_networkx_nodes(
             G, pos=pos, nodelist=set(G.nodes()), node_color="black", ax=ax, node_size=1200)
-        
-        
-        node_labels =CustomGraph.get_node_labeles_heuristic(problem=problem)
+
+        node_labels = CustomGraph.get_node_labeles_heuristic(problem=problem)
         nx.draw_networkx_labels(G, pos=pos, labels=dict(zip(graph_dict.keys(), node_labels)),
                                 font_color="white", ax=ax, font_size=10, font_family="sans-serif")
         null_nodes.set_edgecolor("black")
@@ -61,11 +76,14 @@ def animation_pop_up(graph, Algorithm):
             element for trace in parent_path for element in trace]
 
         query_nodes = nx.draw_networkx_nodes(
-            G, pos=pos, nodelist=[node.state for node in path], node_color=['black' if node == problem.initial_node else 'yellow' if node.state in problem.goal_states else 'violet' if node == path[-1] else 'green' if (path[-1].state in problem.goal_states and node.state in unpacked_parent_path)else 'blue' if node.state in unpacked_parent_path else 'red' for node in path], ax=ax, node_size=1200)
+            G, pos=pos, nodelist=[node.state for node in path], node_color=['black' if node == problem.initial_node else 'yellow'
+                                                                            if node.state in problem.goal_states
+                                                                            else 'violet' if node == path[-1] else 'green'
+                                                                            if (path[-1].state in problem.goal_states and node.state in unpacked_parent_path)else
+                                                                            'blue' if node.state in unpacked_parent_path else 'red' for node in path],
+            ax=ax, node_size=1200)
         query_nodes.set_edgecolor("white")
-        # Query nodes
-        #nx.draw_networkx_labels(G, pos=pos, labels=dict(zip([node.state for node in path], [node.state for node in path])),
-        #                        font_color="white", ax=ax, font_size=10, font_family="sans-serif")
+
         edgelist = [[node.parent.state if node.parent is not None else node.state,
                      node.state] for node in path]
 
@@ -86,17 +104,9 @@ def animation_pop_up(graph, Algorithm):
 
     # Run the A* search algorithm
 
-    path = problem.search()
-
-    # Generate animation frames
-    path_history = []
-    if path is not None:
-        for i in range(len(path)):
-            partial_path = path[:i+1]
-
-            path_history.append(partial_path)
-
     # Create the animation object
+
+    path_history = get_path_history(problem)
 
     root = tk.Tk()
     root.geometry("1920x1080")
