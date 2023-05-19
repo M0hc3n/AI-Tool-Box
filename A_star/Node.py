@@ -108,15 +108,15 @@ class A_star:
                     child_node = Node(v[0], current_node.cost+v[1], score,
                                       parent=current_node, action=f"({current_node.state},{v[0]})")
 
-                    heapq.heappush(frontier, child_node)
                     if (not (child_node in frontier) and not (child_node in explored)):
                         heapq.heappush(frontier, child_node)
 
                     elif (child_node in frontier and child_node.score < self.get_node_score(child_node, frontier)):
                         frontier.remove(child_node)
                         heapq.heappush(frontier, child_node)
+                        print([x.state for x in frontier])
 
 
 algorithm = A_star("A", "G", CustomGraph.get_graph_dict())
 for e in (algorithm.search()):
-  print(e.parent)
+  print(e,e.parent)
