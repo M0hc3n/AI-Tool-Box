@@ -34,6 +34,7 @@ class Best_First_Search:
         for v in value:
             if isinstance(v, int):
                 min_value = min(min_value, v)
+        return min_value
 
     def get_node_score(self, node, frontier):
         for element in frontier:
@@ -66,13 +67,16 @@ class Best_First_Search:
                     if (self.algorithm == Variants.A_star):
                         cost = current_node.cost+v[1]
                         # here the heuristic value of a node is the min between all the heuristics
-                        min_heuristic = self.min_heuristic_value(self.problem[current_node.state])
-                        score = cost + self.problem[v[0]][-1]
+                        min_heuristic = self.min_heuristic_value(
+                            self.problem[v[0]])
+                        score = cost + min_heuristic
                     elif (self.algorithm == Variants.UCS):
                         cost = current_node.cost+v[1]
                         score = cost
                     elif (self.algorithm == Variants.GREEDY):
-                        score = self.min_heuristic_value(self.problem[current_node.state])
+                        score = self.min_heuristic_value(
+                            self.problem[v[0]])
+                        
                     child_node = Node(v[0], current_node.cost+v[1], score,
                                       parent=current_node, action=f"({current_node.state},{v[0]})")
 
