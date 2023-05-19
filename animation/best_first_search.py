@@ -31,12 +31,26 @@ class Best_First_Search:
         list of the heuristics in case we have many goal nodes
         """
 
-   
-
     def get_node_score(self, node, frontier):
         for element in frontier:
             if (node == element):
                 return element.score
+
+    def generate_node(self, current_node, v):
+        if (self.algorithm == Variants.A_star):
+            cost = current_node.cost+v[1]
+            # here the heuristic value of a node is the min between all the heuristics
+            min_heuristic = CustomGraph.min_heuristic_value(
+                self.problem.graph_dict[v[0]])
+            score = cost + min_heuristic
+        elif (self.algorithm == Variants.UCS):
+            cost = current_node.cost+v[1]
+            score = cost
+        elif (self.algorithm == Variants.GREEDY):
+            score = CustomGraph.min_heuristic_value(
+                self.problem.graph_dict[v[0]])
+        return Node(v[0], current_node.cost+v[1], score,
+                    parent=current_node, action=f"({current_node.state},{v[0]})")
 
     def search(self):
 
@@ -60,23 +74,8 @@ class Best_First_Search:
             for v in self.problem.graph_dict[current_node.state]:
                 # generating the children
                 if (not isinstance(v, int)):
-                    # Node score depending on the type of the algorithm
-                    if (self.algorithm == Variants.A_star):
-                        cost = current_node.cost+v[1]
-                        # here the heuristic value of a node is the min between all the heuristics
-                        min_heuristic = CustomGraph.min_heuristic_value(
-                            self.problem.graph_dict[v[0]])
-                        score = cost + min_heuristic
-                    elif (self.algorithm == Variants.UCS):
-                        cost = current_node.cost+v[1]
-                        score = cost
-                    elif (self.algorithm == Variants.GREEDY):
-                        score = CustomGraph.min_heuristic_value(
-                            self.problem.graph_dict[v[0]])
-
-                    child_node = Node(v[0], current_node.cost+v[1], score,
-                                      parent=current_node, action=f"({current_node.state},{v[0]})")
-
+                    # generate a child
+                    child_node = self.generate_node(current_node, v)
                     if (not (child_node in frontier) and not (child_node in explored)):
                         heapq.heappush(frontier, child_node)
 

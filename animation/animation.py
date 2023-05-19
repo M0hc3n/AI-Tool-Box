@@ -4,10 +4,7 @@ import matplotlib.animation as animation
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from Graph import CustomGraph
-from best_first_search import Best_First_Search
-from best_first_search import Variants
 import time
-# Graph Creation
 
 class Animation:
     def __init__(self, algorithm):
@@ -17,9 +14,7 @@ class Animation:
     def get_parent_path(self, path):
 
         currnet_node = path[-1]
-        parent_path = [
-            currnet_node
-        ]
+        parent_path = [currnet_node]
         # we propaget from current state to parent
         while currnet_node.parent is not None:
             parent_path.append(currnet_node.parent)
@@ -99,6 +94,7 @@ class Animation:
 
 # here both graph and Algorithm are classes
 
+
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()
         pos = nx.spring_layout(G)
@@ -120,18 +116,3 @@ class Animation:
             path_history), fargs=(path_history, ax, G, pos), interval=1000, repeat=True)
         root.mainloop()
 
-
-# this is just for testing purposes
-
-customGraph = {"A": [["B", 2], ["C", 3], 9],  # h(n) to G ,h(n) to F
-               "B": [["A", 2], ["C", 4], ["D", 5], 15],
-               "C": [["A", 3], ["B", 4], ["D", 3], ["F", 6], 13],
-               "D": [["B", 5], ["C", 3], ["E", 2], 6],
-               "E": [["G", 5], ["F", 3], ["D", 2], 4],
-               "F": [["C", 6], ["E", 3], 6],
-               "G": [["E", 5], 0]
-               }
-algo = Best_First_Search(
-    "A", ["F"], problem=CustomGraph(customGraph), algorithm=Variants.GREEDY)
-animate = Animation(algorithm=algo)
-animate.animation_pop_up()
