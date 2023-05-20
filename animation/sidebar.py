@@ -52,8 +52,20 @@ class SideBar(tk.Frame):
 
         self.apply_algorithm_button = tk.Button(
             self, text="Apply Search Algorithm", command=self.apply_algorithm)
+
+            
+        self.initial_node_label = tk.Label(self, text="Initial Node:")
+        self.initial_node_label.grid(column=0, row= 10)
+        self.initial_node_entry = tk.Entry(self)
+        self.initial_node_entry.grid(column=1, row= 10)
+
+        self.goal_node_label = tk.Label(self, text="Goal Node:")
+        self.goal_node_label.grid(column=0, row=11)
+        self.goal_node_entry = tk.Entry(self)
+        self.goal_node_entry.grid(column=1, row=11)
+
         self.apply_algorithm_button.grid(
-            column=0, row=11, columnspan=2, sticky="nsew")
+            column=0, row=13, columnspan=2, sticky="nsew")
 
     def add_node(self):
         node_name = self.node_name_entry.get()
@@ -94,7 +106,7 @@ class SideBar(tk.Frame):
         clicked.set("Breadth First Search")
 
         drop = tk.OptionMenu(self, clicked, *options)
-        drop.grid(column=0, row=10, sticky="nsew", columnspan=2)
+        drop.grid(column=0, row=12, sticky="nsew", columnspan=2)
 
     def apply_algorithm(self):
         customGraph = {'A': [["G", 5], 9],  # h(n) to G ,h(n) to F
