@@ -13,7 +13,6 @@ class SideBar(tk.Frame):
         super().__init__(parent)
 
         self.parent = parent
-        self.goal_states=[]
 
         self.node_name_label = tk.Label(self, text="Node Name:")
         self.node_name_label.grid(column=0, row=0)
@@ -54,26 +53,37 @@ class SideBar(tk.Frame):
         self.apply_algorithm_button = tk.Button(
             self, text="Apply Search Algorithm", command=self.apply_algorithm)
 
-            
         self.initial_node_label = tk.Label(self, text="Initial Node:")
         self.initial_node_label.grid(column=0, row= 10)
         self.initial_node_entry = tk.Entry(self)
         self.initial_node_entry.grid(column=1, row= 10)
 
+        self.add_initial_node = tk.Button(
+            self, text="Set Initial", command=self.add_initial)
+        self.add_initial_node.grid(column=0, row=11, columnspan=2, sticky="nsew")
+
         self.goal_node_label = tk.Label(self, text="Goal Node:")
-        self.goal_node_label.grid(column=0, row=11)
+        self.goal_node_label.grid(column=0, row=12)
         self.goal_node_entry = tk.Entry(self)
-        self.goal_node_entry.grid(column=1, row=11)
+        self.goal_node_entry.grid(column=1, row=12)
 
         self.add_goal_button = tk.Button(
             self, text="Add Goal", command=self.add_goal)
-        self.add_goal_button.grid(column=0, row=12, columnspan=2, sticky="nsew")
+        self.add_goal_button.grid(column=0, row=13, columnspan=2, sticky="nsew")
 
         self.apply_algorithm_button.grid(
-            column=0, row=14, columnspan=2, sticky="nsew")
+            column=0, row=15, columnspan=2, sticky="nsew")
 
     def add_goal(self):
-        self.goal_states.append(self.goal_node_entry.get())
+        self.parent.goal_states.append(self.goal_node_entry.get())
+        print('goal' ,self.parent.goal_states)
+
+        self.parent._update_graph()
+
+    def add_initial(self):
+        self.parent.initial_state = self.initial_node_entry.get()
+
+        self.parent._update_graph()
 
 
     def add_node(self):
@@ -116,12 +126,12 @@ class SideBar(tk.Frame):
         self.clicked.set(list(self.options.keys())[0])
 
         drop = tk.OptionMenu(self, self.clicked, *self.options.keys())
-        drop.grid(column=0, row=13, sticky="nsew", columnspan=2)
+        drop.grid(column=0, row=14, sticky="nsew", columnspan=2)
 
     def apply_algorithm(self):
 
         print(nx.spring_layout(self.parent.custom_graph.graph_nx))
         algo = best_first_search.Best_First_Search(
-            self.initial_node_entry.get(), self.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
+            self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
         animate = animation.Animation(algo)
         animate.animation_pop_up()
