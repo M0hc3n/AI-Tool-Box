@@ -17,7 +17,7 @@ class Animation:
         self.animate = None
         self.direction = 1  # 1 stands for forward
         self.is_rendered = True  # to make sure that the backward frame is rendered
-        self.is_start=True
+        self.is_start = True
 
     def get_parent_path(self, path):
 
@@ -77,10 +77,12 @@ class Animation:
         ax.set_title(title, fontsize=20)
 
     def update(self, num, path_history, ax, G, pos):
-        ax.clear()
-        graph_dict = self.graph.get_graph_dict()
-        if(not self.is_start):
-        # Get the current path
+
+        graph_dict = self.graph.graph_dict
+
+        path = path_history[self.frame_number]
+        if (not self.is_start):
+          # Get the current path
             if (self.direction == 1):
                 self.frame_number += 1
                 self.frame_number %= len(path_history)
@@ -88,13 +90,10 @@ class Animation:
                 self.frame_number -= 1
                 if (self.frame_number == -1):
                     self.frame_number = 0
-                if (self.is_rendered == False):
-                    self.is_rendered = True
-                    self.direction = 1
-        else :
-            self.is_start=False
-        path = path_history[self.frame_number]
 
+        else:
+            self.is_start = False
+        ax.clear()
         #self.frame_number = num
 
         # drawing the base edges
@@ -138,14 +137,22 @@ class Animation:
             G, pos, edge_labels, font_size=10, font_family="sans-serif")
 
         self.set_title(ax, path[-1].cost, path)
+        if (self.direction == 0):
+            if (self.is_rendered == False):
+                self.is_rendered = True
+                self.direction = 1
 
     def backward(self):
+        if (self.is_rendered == False):
+            self.frame_number -= 1
         self.is_rendered = False
         self.direction = 0
 
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()
+        #print(G.nodes())
         pos = nx.spring_layout(G)
+        print('#############',pos)
         fig, ax = plt.subplots(figsize=(20, 20))
         # perform the Search algorithm
         path_history = self.get_path_history()

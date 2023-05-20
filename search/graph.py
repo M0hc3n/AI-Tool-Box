@@ -29,9 +29,11 @@ class CustomGraph:
 
         if node_b_state not in self.graph_dict.keys():
             self.add_node(node_b_state)
+        
 
         self.graph_dict[node_a_state].insert(0, [node_b_state, weight])
         self.graph_dict[node_b_state].insert(0 , [node_a_state, weight])
+        self.self.graph_nx = self.create_nx_graph(self.graph_dict)
 
     def add_node(self, state, heuristic=0):
         if (state not in self.graph_dict.keys()):
@@ -39,6 +41,8 @@ class CustomGraph:
         else:
             # since a  node can have multiple heuristics
             self.graph_dict[state].append(heuristic)
+        self.graph_nx = self.create_nx_graph(self.graph_dict)
+
 
     @staticmethod
     def get_node_labeles_heuristic(problem):

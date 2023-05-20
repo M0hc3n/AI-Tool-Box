@@ -17,20 +17,32 @@ class CustomGraph:
         G = nx.Graph()
         G.add_nodes_from(graph.keys())
         for k, v in graph.items():
-            G.add_edges_from([(k, t[0], {
-                "weight": t[1]}) for t in v if not isinstance(t, int)])
+            G.add_edges_from([
+                (k, t[0], {"weight": t[1]})
+                for t in v if not isinstance(t, int)])
         return G
 
-    def add_edge(self, node_a_state, node_b_state, weight):
-        self.graph_dict[node_a_state].insert([node_b_state, weight])
-        self.graph_dict[node_b_state].insert([node_a_state, weight])
+    def add_edge(self, node_a_state, node_b_state, weight=1):
 
-    def add_node(self, state, heuristic):
+        if node_a_state not in self.graph_dict.keys():
+            self.add_node(node_a_state)
+
+        if node_b_state not in self.graph_dict.keys():
+            self.add_node(node_b_state)
+        
+
+        self.graph_dict[node_a_state].insert(0, [node_b_state, weight])
+        self.graph_dict[node_b_state].insert(0 , [node_a_state, weight])
+        self.graph_nx = self.create_nx_graph(self.graph_dict)
+
+    def add_node(self, state, heuristic=0):
         if (state not in self.graph_dict.keys()):
             self.graph_dict[state] = [heuristic]
         else:
             # since a  node can have multiple heuristics
             self.graph_dict[state].append(heuristic)
+        self.graph_nx = self.create_nx_graph(self.graph_dict)
+
 
     @staticmethod
     def get_node_labeles_heuristic(problem):

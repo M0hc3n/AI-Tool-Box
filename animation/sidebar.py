@@ -1,5 +1,10 @@
 import tkinter as tk
 import networkx as nx
+import animation
+import best_first_search
+from Graph import CustomGraph
+
+# Best_First_Search, Variants
 
 
 class SideBar(tk.Frame):
@@ -67,7 +72,8 @@ class SideBar(tk.Frame):
         path_cost = int(self.path_cost_entry.get())
 
         self.parent.graph.add_edge(source_node, target_node, weight=path_cost)
-        self.parent.custom_graph.add_edge(source_node, target_node, weight=path_cost)
+        self.parent.custom_graph.add_edge(
+            source_node, target_node, weight=path_cost)
         print("Added edge:", source_node, "->", target_node)
 
         self.parent._update_graph()
@@ -91,6 +97,15 @@ class SideBar(tk.Frame):
         drop.grid(column=0, row=10, sticky="nsew", columnspan=2)
 
     def apply_algorithm(self):
-        print(
-            nx.to_dict_of_dicts(self.parent.graph)
-        )
+        customGraph = {'A': [["G", 5], 9],  # h(n) to G ,h(n) to F
+                       
+                       'G': [["A", 5], 0]
+                       }
+        
+        print(nx.spring_layout(self.parent.custom_graph.graph_nx))
+
+        algo = best_first_search.Best_First_Search(
+            "A", ["G"], problem=self.parent.custom_graph, algorithm=best_first_search.Variants.UCS)
+        animate = animation.Animation(algo)
+        animate.animation_pop_up()
+        print("####")

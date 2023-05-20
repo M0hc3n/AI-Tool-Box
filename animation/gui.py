@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from sidebar import SideBar
-from graph import CustomGraph
+from Graph import CustomGraph
 
 class Window(tk.Tk):
 
@@ -41,4 +41,4 @@ class Window(tk.Tk):
 
         self.canvas.draw()
 
-        print(self.custom_graph.graph_dict)
+        
