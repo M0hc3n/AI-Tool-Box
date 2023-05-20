@@ -42,6 +42,16 @@ class SideBar(tk.Frame):
             self, text="Add Edge", command=self.add_edge)
         self.add_edge_button.grid(column=0, row=9, columnspan=2, sticky="nsew")
 
+        self.initial_node_label = tk.Label(self, text="Initial Node:")
+        self.initial_node_label.grid(column=0, row=6)
+        self.initial_node_entry = tk.Entry(self)
+        self.initial_node_entry.grid(column=1, row=6)
+
+        self.goal_node_label = tk.Label(self, text="Goal Node:")
+        self.goal_node_label.grid(column=0, row=7)
+        self.goal_node_entry = tk.Entry(self)
+        self.goal_node_entry.grid(column=1, row=7)
+
         self.add_drop_down_menu()
 
         self.apply_algorithm_button = tk.Button(
