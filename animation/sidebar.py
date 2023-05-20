@@ -119,7 +119,6 @@ class SideBar(tk.Frame):
         drop.grid(column=0, row=13, sticky="nsew", columnspan=2)
 
     def apply_algorithm(self):
-        print(self.goal_states, self.clicked.get())
 
         print(nx.spring_layout(self.parent.custom_graph.graph_nx))
         algo = best_first_search.Best_First_Search(
