@@ -27,7 +27,8 @@ class Window(tk.Tk):
 
         self.goal_states = []
         self.initial_state = ''
-
+    
+    
     def _clear(self):
         for item in self.canvas.get_tk_widget().find_all():
             self.canvas.get_tk_widget().delete(item)
@@ -62,6 +63,7 @@ class Window(tk.Tk):
         green_nodes.set_edgecolor("green")
         initial_node.set_edgecolor("orange")
 
+        #self._clear()
         self.canvas.draw()
 
         
