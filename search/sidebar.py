@@ -1,6 +1,7 @@
 import tkinter as tk
 import networkx as nx
 
+
 class SideBar(tk.Frame):
 
     def __init__(self, parent):
@@ -46,24 +47,27 @@ class SideBar(tk.Frame):
 
         self.apply_algorithm_button = tk.Button(
             self, text="Apply Search Algorithm", command=self.apply_algorithm)
-        self.apply_algorithm_button.grid(column=0, row=11, columnspan=2, sticky="nsew")
+        self.apply_algorithm_button.grid(
+            column=0, row=11, columnspan=2, sticky="nsew")
 
     def add_node(self):
         node_name = self.node_name_entry.get()
-        node_value = self.node_value_entry.get()
+        node_value = int(self.node_value_entry.get())
 
-        if node_name not in self.parent.graph:
-            self.parent.graph.add_node(node_name, value=node_value)
-            print("Added node:", node_name, node_value)
+        self.parent.graph.add_node(node_name, value=node_value)
+        self.parent.custom_graph.add_node(node_name, node_value)
+
+        print("Added node:", node_name, node_value)
 
         self.parent._update_graph()
 
     def add_edge(self):
         source_node = self.source_node_entry.get()
         target_node = self.target_node_entry.get()
-        path_cost = self.path_cost_entry.get()
+        path_cost = int(self.path_cost_entry.get())
 
         self.parent.graph.add_edge(source_node, target_node, weight=path_cost)
+        self.parent.custom_graph.add_edge(source_node, target_node, weight=path_cost)
         print("Added edge:", source_node, "->", target_node)
 
         self.parent._update_graph()
