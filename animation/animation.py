@@ -1,3 +1,4 @@
+from matplotlib.backend_bases import NavigationToolbar2
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -12,6 +13,11 @@ class Animation:
     def __init__(self, algorithm):
         self.problem = algorithm
         self.graph = algorithm.problem
+        self.frame_number = 0
+        self.animate = None
+        self.direction = 1  # 1 stands for forward
+        self.is_rendered = True  # to make sure that the backward frame is rendered
+        self.is_start=True
 
     def get_parent_path(self, path):
 
@@ -73,8 +79,23 @@ class Animation:
     def update(self, num, path_history, ax, G, pos):
         ax.clear()
         graph_dict = self.graph.get_graph_dict()
-        # Get the current path and path cost
-        path = path_history[num]
+        if(not self.is_start):
+        # Get the current path
+            if (self.direction == 1):
+                self.frame_number += 1
+                self.frame_number %= len(path_history)
+            else:
+                self.frame_number -= 1
+                if (self.frame_number == -1):
+                    self.frame_number = 0
+                if (self.is_rendered == False):
+                    self.is_rendered = True
+                    self.direction = 1
+        else :
+            self.is_start=False
+        path = path_history[self.frame_number]
+
+        #self.frame_number = num
 
         # drawing the base edges
         nx.draw_networkx_edges(G, pos=pos, edgelist=G.edges(),
@@ -117,15 +138,15 @@ class Animation:
             G, pos, edge_labels, font_size=10, font_family="sans-serif")
 
         self.set_title(ax, path[-1].cost, path)
-        time.sleep(1)
 
-
-# here both graph and Algorithm are classes
-
+    def backward(self):
+        self.is_rendered = False
+        self.direction = 0
 
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()
         pos = nx.spring_layout(G)
+        fig, ax = plt.subplots(figsize=(20, 20))
         # perform the Search algorithm
         path_history = self.get_path_history()
 
@@ -134,12 +155,23 @@ class Animation:
         root.geometry("1920x1080")
         canvas = tk.Canvas(root)
         canvas.pack()
+        self.animate = animation.FuncAnimation(fig, self.update, frames=len(
+            path_history), fargs=(path_history, ax, G, pos), interval=2000, repeat=True)
+        pause_button = tk.Button(
+            canvas, text="Pause Animation", command=self.animate.pause)
+        pause_button.pack()
+
+        resume_button = pause_button = tk.Button(
+            canvas, text="Resume Animation", command=self.animate.resume)
+
+        backward_button = pause_button = tk.Button(
+            canvas, text=" Backward", command=self.backward)
+        backward_button.pack()
+
+        resume_button.pack()
 
         # Create a Matplotlib figure and attach it to the canvas
-        fig, ax = plt.subplots(figsize=(20, 20))
         fig_agg = FigureCanvasTkAgg(fig, master=canvas)
         fig_agg.get_tk_widget().pack()
 
-        animate = animation.FuncAnimation(fig, self.update, frames=len(
-            path_history), fargs=(path_history, ax, G, pos), interval=1000, repeat=True)
         root.mainloop()

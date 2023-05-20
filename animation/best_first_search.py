@@ -27,9 +27,7 @@ class Best_First_Search:
         self.goal_states = goal_states
         self.algorithm = algorithm
 
-        """_summary_This is a function to return the min heuristic value among all
-        list of the heuristics in case we have many goal nodes
-        """
+       
 
     def get_node_score(self, node, frontier):
         for element in frontier:
