@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from sidebar import SideBar
-
+from graph import CustomGraph
 
 class Window(tk.Tk):
 
@@ -17,6 +17,7 @@ class Window(tk.Tk):
         self.geometry(geometry)
 
         self.graph = nx.Graph()
+        self.custom_graph = CustomGraph(graph = {})
 
         self.sidebar = SideBar(self)
         self.sidebar.pack(side="left", fill="y")
@@ -39,3 +40,5 @@ class Window(tk.Tk):
         nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=labels)
 
         self.canvas.draw()
+
+        print(self.custom_graph.graph_dict)
