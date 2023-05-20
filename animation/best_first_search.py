@@ -1,17 +1,8 @@
 import heapq
-from enum import Enum
 from Node import Node
 from Graph import CustomGraph
-
-
-# this is an Enum for the variannts of the best first search techniques
-class Variants(Enum):
-    UCS = 1
-    A_star = 2
-    GREEDY = 3
-    # we can add more similar algorithms
-
-
+from utils import Variants
+    
 class Best_First_Search:
     """
       initial_node: the initial node of the problem

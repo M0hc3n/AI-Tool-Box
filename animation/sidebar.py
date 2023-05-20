@@ -3,10 +3,9 @@ import networkx as nx
 import animation
 import best_first_search
 from Graph import CustomGraph
+from utils import Variants
 
 # Best_First_Search, Variants
-
-
 class SideBar(tk.Frame):
 
     def __init__(self, parent):
@@ -14,7 +13,7 @@ class SideBar(tk.Frame):
         super().__init__(parent)
 
         self.parent = parent
-        self.goalStates=[]
+        self.goal_states=[]
 
         self.node_name_label = tk.Label(self, text="Node Name:")
         self.node_name_label.grid(column=0, row=0)
@@ -66,8 +65,16 @@ class SideBar(tk.Frame):
         self.goal_node_entry = tk.Entry(self)
         self.goal_node_entry.grid(column=1, row=11)
 
+        self.add_goal_button = tk.Button(
+            self, text="Add Goal", command=self.add_goal)
+        self.add_goal_button.grid(column=0, row=12, columnspan=2, sticky="nsew")
+
         self.apply_algorithm_button.grid(
-            column=0, row=13, columnspan=2, sticky="nsew")
+            column=0, row=14, columnspan=2, sticky="nsew")
+
+    def add_goal(self):
+        self.goal_states.append(self.goal_node_entry.get())
+
 
     def add_node(self):
         node_name = self.node_name_entry.get()
@@ -93,26 +100,29 @@ class SideBar(tk.Frame):
         self.parent._update_graph()
 
     def add_drop_down_menu(self):
-        options = [
-            "Breadth First Search",
-            "Depth First Search",
-            "Uniform Cost Search",
-            "Depth Limited",
-            "Iterative Deepening Search",
-            "Greedy Best First Search",
-            "A* Star"
-        ]
+        
+        self.options = {
+            "Breadth First Search": Variants.BFS ,
+            "Depth First Search":  Variants.DFS,
+            "Uniform Cost Search":  Variants.UCS,
+            "Depth Limited":  Variants.DPL,
+            "Iterative Deepening Search":  Variants.IDS,
+            "Greedy Best First Search": Variants.GREEDY,
+            "A* Star": Variants.A_star
+        }
 
-        clicked = tk.StringVar()
+        self.clicked = tk.StringVar()
 
-        clicked.set("Breadth First Search")
+        self.clicked.set(list(self.options.keys())[0])
 
-        drop = tk.OptionMenu(self, clicked, *options)
-        drop.grid(column=0, row=12, sticky="nsew", columnspan=2)
+        drop = tk.OptionMenu(self, self.clicked, *self.options.keys())
+        drop.grid(column=0, row=13, sticky="nsew", columnspan=2)
 
     def apply_algorithm(self):
+        print(self.goal_states, self.clicked.get())
+
         print(nx.spring_layout(self.parent.custom_graph.graph_nx))
         algo = best_first_search.Best_First_Search(
-            self.initial_node_entry.get(), ["G"], problem=self.parent.custom_graph, algorithm=best_first_search.Variants.UCS)
+            self.initial_node_entry.get(), self.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
         animate = animation.Animation(algo)
         animate.animation_pop_up()

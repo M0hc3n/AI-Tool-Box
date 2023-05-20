@@ -33,11 +33,23 @@ class Window(tk.Tk):
         plt.clf()
 
         pos = nx.spring_layout(self.graph)
-        nx.draw(self.graph, pos, with_labels=True,
-                node_color='lightblue', node_size=500, font_size=10)
+        nx.draw_networkx_edges(self.graph, pos=pos, edgelist=self.graph.edges(),
+                                edge_color="gray", width=6, alpha=0.5,  style="dashed")
 
-        labels = nx.get_edge_attributes(self.graph, 'weight')
-        nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=labels)
+        null_nodes = nx.draw_networkx_nodes(
+            self.graph, pos=pos, nodelist=set(self.graph.nodes()), node_color="black",  node_size=1200)
+
+        node_labels = CustomGraph.get_node_labeles_heuristic(
+            problem=self.custom_graph.graph_dict)
+        nx.draw_networkx_labels(self.graph, pos=pos, labels=dict(zip(self.custom_graph.graph_dict.keys(), node_labels)),
+                                font_color="white",  font_size=10, font_family="sans-serif")
+
+        # drawing the costs
+        edge_labels = nx.get_edge_attributes(self.graph, "weight")
+        nx.draw_networkx_edge_labels(
+            self.graph, pos, edge_labels, font_size=15, font_family="sans-serif")
+
+        null_nodes.set_edgecolor("black")
 
         self.canvas.draw()
 
