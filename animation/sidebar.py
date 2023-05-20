@@ -14,6 +14,7 @@ class SideBar(tk.Frame):
         super().__init__(parent)
 
         self.parent = parent
+        self.goalStates=[]
 
         self.node_name_label = tk.Label(self, text="Node Name:")
         self.node_name_label.grid(column=0, row=0)
@@ -38,6 +39,7 @@ class SideBar(tk.Frame):
         self.target_node_label.grid(column=0, row=4)
         self.target_node_entry = tk.Entry(self)
         self.target_node_entry.grid(column=1, row=4)
+        
 
         self.path_cost_label = tk.Label(self, text="Path Cost:")
         self.path_cost_label.grid(column=0, row=5)
@@ -109,15 +111,8 @@ class SideBar(tk.Frame):
         drop.grid(column=0, row=12, sticky="nsew", columnspan=2)
 
     def apply_algorithm(self):
-        customGraph = {'A': [["G", 5], 9],  # h(n) to G ,h(n) to F
-                       
-                       'G': [["A", 5], 0]
-                       }
-        
         print(nx.spring_layout(self.parent.custom_graph.graph_nx))
-
         algo = best_first_search.Best_First_Search(
-            "A", ["G"], problem=self.parent.custom_graph, algorithm=best_first_search.Variants.UCS)
+            self.initial_node_entry.get(), ["G"], problem=self.parent.custom_graph, algorithm=best_first_search.Variants.UCS)
         animate = animation.Animation(algo)
         animate.animation_pop_up()
-        print("####")

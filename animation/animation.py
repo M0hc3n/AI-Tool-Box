@@ -143,8 +143,6 @@ class Animation:
                 self.direction = 1
 
     def backward(self):
-        if (self.is_rendered == False):
-            self.frame_number -= 1
         self.is_rendered = False
         self.direction = 0
 
@@ -163,7 +161,7 @@ class Animation:
         canvas = tk.Canvas(root)
         canvas.pack()
         self.animate = animation.FuncAnimation(fig, self.update, frames=len(
-            path_history), fargs=(path_history, ax, G, pos), interval=2000, repeat=True)
+            path_history), fargs=(path_history, ax, G, pos), interval=3000, repeat=True)
         pause_button = tk.Button(
             canvas, text="Pause Animation", command=self.animate.pause)
         pause_button.pack()
