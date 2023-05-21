@@ -80,7 +80,6 @@ class Animation:
 
         graph_dict = self.graph.graph_dict
 
-        path = path_history[self.frame_number]
         if (not self.is_start):
           # Get the current path
             if (self.direction == 1):
@@ -93,6 +92,7 @@ class Animation:
 
         else:
             self.is_start = False
+        path = path_history[self.frame_number]
         ax.clear()
         #self.frame_number = num
 
@@ -145,18 +145,21 @@ class Animation:
     def backward(self):
         self.is_rendered = False
         self.direction = 0
-
+    
+        
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()
-        #print(G.nodes())
+        # print(G.nodes())
         pos = nx.spring_layout(G)
-        print('#############',pos)
+
         fig, ax = plt.subplots(figsize=(20, 20))
         # perform the Search algorithm
         path_history = self.get_path_history()
 
         # creating the Tkinter Window
         root = tk.Tk()
+        def kill():
+          root.destroy()
         root.geometry("1920x1080")
         canvas = tk.Canvas(root)
         canvas.pack()
@@ -178,5 +181,5 @@ class Animation:
         # Create a Matplotlib figure and attach it to the canvas
         fig_agg = FigureCanvasTkAgg(fig, master=canvas)
         fig_agg.get_tk_widget().pack()
-
+        root.protocol("WM_DELETE_WINDOW", kill)
         root.mainloop()
