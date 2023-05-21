@@ -1,19 +1,14 @@
 from gui import Window
 from MapColor import MapColor
 
+def on_close():
+    window.destroy()
+    window.quit()
+
 
 if __name__ == "__main__":
     window = Window()
+
+    window.protocol('WM_DELETE_WINDOW', on_close)
+
     window.mainloop()
-
-    # graph = {
-    #     'A':{'B', 'C'},
-    #     'B':{'A', 'C'},
-    #     'C':{'A', 'B'}
-    # }
-
-    # colors = {'b','r','y'}
-
-    # map_color = MapColor(graph)
-
-    # map_color.solve_problem(colors)

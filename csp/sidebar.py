@@ -1,12 +1,14 @@
 import tkinter as tk
 import networkx as nx
 from MapColor import MapColor
+import matplotlib.pyplot as plt
+import numpy as np
 
 class SideBar(tk.Frame):
 
     def __init__(self, parent):
 
-        super().__init__(parent)
+        super().__init__(parent, width=500)
 
         self.parent = parent
 
@@ -40,7 +42,7 @@ class SideBar(tk.Frame):
 
 
         self.apply_algorithm_button = tk.Button(
-            self, text="Apply Search Algorithm", command=self.solve_csp)
+            self, text="Color The Map !", command=self.solve_csp)
         self.apply_algorithm_button.grid(column=0, row=11, columnspan=2, sticky="nsew")
 
     def add_node(self):
@@ -69,6 +71,7 @@ class SideBar(tk.Frame):
             map_graph[key] = inner_keys
 
         return map_graph
+    
 
     def solve_csp(self):
         print(
@@ -76,8 +79,18 @@ class SideBar(tk.Frame):
         )
 
         map_graph = self.convert_top_map_graph()
+        number_of_colors = int(self.number_of_colors_entry.get())
 
-        map_coloring_problem = MapColor(map_graph)
+        map_coloring_problem = MapColor(map_graph, number_of_colors)
 
-        map_coloring_problem.solve_problem({'r','b','y','g'})
+        result = map_coloring_problem.solve_problem()
 
+        if(result == False):
+            self.feedback_label = tk.Label(self, text="Unsufficient number of colors", font=('sans-serif', 13), fg='red', width=24)
+            self.feedback_label.grid(column=0, row=12, columnspan=2)
+
+            return
+
+        self.parent.nodes_with_colors = result
+
+        self.parent._update_graph()
