@@ -44,8 +44,10 @@ class GameAI():
 
         legal_moves =  self.legal_moves(game)
 
+        print(legal_moves)
+
         if len(legal_moves) == 0:
-            self.game.end_game()
+            return min_move, minimum
 
         for move in legal_moves:
             state = game.get_copy()
@@ -81,9 +83,9 @@ class GameAI():
 
         legal_moves =  self.legal_moves(game)
 
+        print(legal_moves)
         if len(legal_moves) == 0:
-            self.game.end_game()
-
+            return max_move, maximum
 
         for move in legal_moves:
             state = game.get_copy()

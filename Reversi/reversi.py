@@ -62,6 +62,11 @@ class Reversi():
 
     def perform_move(self, x, y):
 
+        if(x== -1 and y == -1):
+            self.player = 3 - self.player
+            self.has_changed = True 
+            return
+
         if self.board[x][y] != 0:
             raise Illegal_move(
                 f"Player {self.player} tried to place a tile at {x},{y} but it is already occupied by {self.board[x][y]}")
@@ -81,6 +86,7 @@ class Reversi():
         legal_move_exists = self.legal_move_exists()
 
         if not legal_move_exists:
+            print('game ended')
             self.end_game()
             return
 
