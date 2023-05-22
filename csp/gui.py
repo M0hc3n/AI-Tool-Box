@@ -35,7 +35,6 @@ class Window(tk.Tk):
         plt.clf()
 
         pos = nx.spring_layout(self.graph)
-        
 
         if(len( self.nodes_with_colors.keys() ) > 0):
             nx.draw(self.graph, pos, with_labels=True, node_color=[self.nodes_with_colors[node] for node in self.graph.nodes() ], node_size=800, font_size=10 )

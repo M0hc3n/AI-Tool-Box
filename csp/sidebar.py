@@ -45,6 +45,9 @@ class SideBar(tk.Frame):
             self, text="Color The Map !", command=self.solve_csp)
         self.apply_algorithm_button.grid(column=0, row=11, columnspan=2, sticky="nsew")
 
+        self.feedback_label = tk.Label(self, text="", font=('sans-serif', 13), fg='red', width=24)
+        self.feedback_label.grid(column=0, row=12, columnspan=2)
+
     def add_node(self):
         node_name = self.node_name_entry.get()
 
@@ -78,6 +81,8 @@ class SideBar(tk.Frame):
             nx.to_dict_of_dicts(self.parent.graph)
         )
 
+        self.feedback_label.config(text="")
+
         map_graph = self.convert_top_map_graph()
         number_of_colors = int(self.number_of_colors_entry.get())
 
@@ -86,9 +91,7 @@ class SideBar(tk.Frame):
         result = map_coloring_problem.solve_problem()
 
         if(result == False):
-            self.feedback_label = tk.Label(self, text="Unsufficient number of colors", font=('sans-serif', 13), fg='red', width=24)
-            self.feedback_label.grid(column=0, row=12, columnspan=2)
-
+            self.feedback_label.config(text="Unsufficient Number of colors")
             return
 
         self.parent.nodes_with_colors = result
