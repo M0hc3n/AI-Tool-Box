@@ -9,7 +9,9 @@ class Best_First_Search:
       goal_states:An array of goal states state to the problem
       problem:Instance of CustomGraph class
       algorithm:The type of algorithm to perform the search(UCS,Greedy,A_star)
-    """
+    """   
+
+    
 
     def __init__(self, initial_state, goal_states, problem, algorithm=Variants.UCS):
         self.problem = problem
