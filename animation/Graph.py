@@ -43,6 +43,12 @@ class CustomGraph:
             self.graph_dict[state].append(heuristic)
         self.graph_nx = self.create_nx_graph(self.graph_dict)
 
+    def get_neighbors(self, state):
+        arr = []
+        for i in self.graph_dict[state]:
+                if (type(i) == list):
+                    arr.append(i[0])
+        return arr
 
     @staticmethod
     def get_node_labeles_heuristic(problem):

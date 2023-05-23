@@ -23,7 +23,7 @@ class Animation:
 
         currnet_node = path[-1]
         parent_path = [currnet_node]
-
+        
         while currnet_node.parent is not None:
             parent_path.append(currnet_node.parent)
             currnet_node = currnet_node.parent
@@ -69,6 +69,8 @@ class Animation:
             title += "UCS"
         elif (self.problem.algorithm == Variants.A_star):
             title += "A Star"
+        elif (self.problem.algorithm == Variants.DFS):
+            title += "DFS"
         title += "\n"
         title += f"->".join(self.get_ordered_nodes(path)[::-1])
         title += "\n"
@@ -155,6 +157,7 @@ class Animation:
         fig, ax = plt.subplots(figsize=(20, 20))
         # perform the Search algorithm
         path_history = self.get_path_history()
+        print(path_history)
 
         # creating the Tkinter Window
         root = tk.Tk()

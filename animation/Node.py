@@ -25,7 +25,11 @@ class Node:
         return self.score < other.score
 
     def __eq__(self, other):
+        print(self, other)
         return self.state == other.state
 
     def __hash__(self):
         return hash(self.state)
+    
+    def __repr__(self) -> str:
+        return f"{self.state}, {self.parent}"

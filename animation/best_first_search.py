@@ -6,9 +6,9 @@ from utils import Variants
 class Best_First_Search:
     """
       initial_node: the initial node of the problem
-      goal_states:An array of goal states state to the problem
-      problem:Instance of CustomGraph class
-      algorithm:The type of algorithm to perform the search(UCS,Greedy,A_star)
+      goal_states: An array of goal states state to the problem
+      problem: Instance of CustomGraph class
+      algorithm: The type of algorithm to perform the search(UCS,Greedy,A_star)
     """
 
     def __init__(self, initial_state, goal_states, problem, algorithm=Variants.UCS):
@@ -44,7 +44,7 @@ class Best_First_Search:
     def search(self):
 
         # back_tracking_set=[]
-        frontier = []
+        frontier = [] 
         heapq.heappush(frontier, self.initial_node)
         explored = []
 

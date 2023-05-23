@@ -2,6 +2,8 @@ import tkinter as tk
 import networkx as nx
 import animation
 import best_first_search
+import depth_breadth
+
 from Graph import CustomGraph
 from utils import Variants
 
@@ -82,7 +84,6 @@ class SideBar(tk.Frame):
 
     def add_initial(self):
         self.parent.initial_state = self.initial_node_entry.get()
-
         self.parent._update_graph()
 
 
@@ -131,7 +132,15 @@ class SideBar(tk.Frame):
     def apply_algorithm(self):
 
         print(nx.spring_layout(self.parent.custom_graph.graph_nx))
-        algo = best_first_search.Best_First_Search(
-            self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
+        if( self.options[self.clicked.get()] == Variants.DFS):
+            algo = depth_breadth.DepthBreadthFirstSearch(
+            self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.DFS)
+        elif ( self.options[self.clicked.get()] == Variants.BFS):
+            algo = depth_breadth.DepthBreadthFirstSearch(
+            self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.BFS)
+        else:
+            algo = best_first_search.Best_First_Search(
+                self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
+        
         animate = animation.Animation(algo)
         animate.animation_pop_up()
