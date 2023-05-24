@@ -4,20 +4,18 @@ from Graph import CustomGraph
 from utils import Variants
 
 
-class Best_First_Search:
-    """
-      initial_node: the initial node of the problem
-      goal_states: An array of goal states state to the problem
-      problem: Instance of CustomGraph class
-      algorithm: The type of algorithm to perform the search(UCS,Greedy,A_star)
-    """
+class BeamSearch:
+  
 
-    def __init__(self, initial_state, goal_states, problem, algorithm=Variants.UCS):
-        self.problem = problem
+    def __init__(self, initial_node, goal_states, problem, algorithm=Variants.BEAM,width=2):
+
         self.initial_node = Node(
-            initial_state, 0, score=self.problem.graph_dict[initial_state][-1], parent=None, action=None)
+            initial_node, 0, score=0 , parent=None, action=None)
         self.goal_states = goal_states
+        self.problem = problem
+        self.explored = []  
         self.algorithm = algorithm
+        self.beam_width = width
 
     def get_node_score(self, node, frontier):
         for element in frontier:
@@ -25,31 +23,23 @@ class Best_First_Search:
                 return element.score
 
     def generate_node(self, current_node, v):
-        if (self.algorithm == Variants.A_star):
-            cost = current_node.cost+v[1]
-            # here the heuristic value of a node is the min between all the heuristics
-            min_heuristic = CustomGraph.min_heuristic_value(
-                self.problem.graph_dict[v[0]])
-            score = cost + min_heuristic
-        elif (self.algorithm == Variants.UCS):
-            cost = current_node.cost+v[1]
-            score = cost
-        elif (self.algorithm == Variants.GREEDY):
-            score = CustomGraph.min_heuristic_value(
-                self.problem.graph_dict[v[0]])
+        cost = current_node.cost+v[1]
+        # here the heuristic value of a node is the min between all the heuristics
+        min_heuristic = CustomGraph.min_heuristic_value(
+            self.problem.graph_dict[v[0]])
+        score = min_heuristic
         return Node(v[0], current_node.cost+v[1], score,
                     parent=current_node, action=f"({current_node.state},{v[0]})")
-
+    
     def search(self):
-
         # back_tracking_set=[]
-        frontier = []
+        frontier = [] 
         heapq.heappush(frontier, self.initial_node)
         explored = []
 
         while (True):
             if (len(frontier) == 0):
-                break
+                return None
 
             current_node = heapq.heappop(frontier
                                          )
@@ -70,5 +60,10 @@ class Best_First_Search:
                     elif (child_node in frontier and child_node.score < self.get_node_score(child_node, frontier)):
                         frontier.remove(child_node)
                         heapq.heappush(frontier, child_node)
-
-        return explored
+            counter=0
+            oldopen = frontier
+            frontier = []
+            while(counter <= self.beam_width):
+                node = heapq.heappop(oldopen)
+                heapq.heappush(frontier, node)
+                counter += 1

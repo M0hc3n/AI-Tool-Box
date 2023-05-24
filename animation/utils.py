@@ -11,5 +11,6 @@ class Variants(Enum):
     DFS = 5
     DPL = 6
     IDS = 7
-    
+    BEAM = 8
+    HILL = 9
 

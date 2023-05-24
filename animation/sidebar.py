@@ -4,6 +4,7 @@ import animation
 import best_first_search
 import depth_breadth
 import depth_limited_search
+import beam_search
 
 from utils import Variants
 
@@ -139,7 +140,10 @@ class SideBar(tk.Frame):
             "Depth Limited":  Variants.DPL,
             "Iterative Deepening Search":  Variants.IDS,
             "Greedy Best First Search": Variants.GREEDY,
-            "A* Star": Variants.A_star
+            "A* Star": Variants.A_star,
+            "Beam Search": Variants.BEAM,
+            "Hill climbing": Variants.HILL
+
         }
 
         self.clicked = tk.StringVar()
@@ -161,6 +165,12 @@ class SideBar(tk.Frame):
         elif (self.options[self.clicked.get()] == Variants.DPL):
             algo = depth_limited_search.DepthLimitedSearch(self.initial_node_entry.get(
             ), self.parent.goal_states, problem=self.parent.custom_graph, limit=int(self.limit_entry.get()))
+        elif (self.options[self.clicked.get()] == Variants.BEAM):
+            algo = beam_search.BeamSearch(self.initial_node_entry.get(
+            ), self.parent.goal_states, problem=self.parent.custom_graph, width=int(self.limit_entry.get()))
+        elif (self.options[self.clicked.get()] == Variants.HILL):
+            algo = beam_search.BeamSearch(self.initial_node_entry.get(
+            ), self.parent.goal_states, problem=self.parent.custom_graph, width=1)
         else:
             algo = best_first_search.Best_First_Search(
                 self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
