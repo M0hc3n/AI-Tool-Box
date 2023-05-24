@@ -2,7 +2,8 @@ import heapq
 from Node import Node
 from Graph import CustomGraph
 from utils import Variants
-    
+
+
 class Best_First_Search:
     """
       initial_node: the initial node of the problem
@@ -17,8 +18,6 @@ class Best_First_Search:
             initial_state, 0, score=self.problem.graph_dict[initial_state][-1], parent=None, action=None)
         self.goal_states = goal_states
         self.algorithm = algorithm
-
-       
 
     def get_node_score(self, node, frontier):
         for element in frontier:
@@ -44,13 +43,13 @@ class Best_First_Search:
     def search(self):
 
         # back_tracking_set=[]
-        frontier = [] 
+        frontier = []
         heapq.heappush(frontier, self.initial_node)
         explored = []
 
         while (True):
             if (len(frontier) == 0):
-                return None
+                break
 
             current_node = heapq.heappop(frontier
                                          )
@@ -71,3 +70,5 @@ class Best_First_Search:
                     elif (child_node in frontier and child_node.score < self.get_node_score(child_node, frontier)):
                         frontier.remove(child_node)
                         heapq.heappush(frontier, child_node)
+
+        return explored

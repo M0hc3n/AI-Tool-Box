@@ -19,7 +19,7 @@ class CustomGraph:
         for k, v in graph.items():
             G.add_edges_from([
                 (k, t[0], {"weight": t[1]})
-                for t in v if not isinstance(t, int)])
+                for t in v if  isinstance(t, list)])
         return G
 
     def add_edge(self, node_a_state, node_b_state, weight=1):
@@ -29,13 +29,11 @@ class CustomGraph:
 
         if node_b_state not in self.graph_dict.keys():
             self.add_node(node_b_state)
-        
-
         self.graph_dict[node_a_state].insert(0, [node_b_state, weight])
         self.graph_dict[node_b_state].insert(0 , [node_a_state, weight])
         self.graph_nx = self.create_nx_graph(self.graph_dict)
 
-    def add_node(self, state, heuristic=0):
+    def add_node(self, state, heuristic=float("inf")):
         if (state not in self.graph_dict.keys()):
             self.graph_dict[state] = [heuristic]
         else:
@@ -62,6 +60,6 @@ class CustomGraph:
     def min_heuristic_value(value):
         min_value = float("inf")
         for v in value:
-            if isinstance(v, int):
+            if not isinstance(v, list):
                 min_value = min(min_value, v)
         return min_value

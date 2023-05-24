@@ -20,23 +20,22 @@ class DepthBreadthFirstSearch:
 
     def search(self):
 
-        visited = list()  
         stack = [self.initial_node]  
 
         while stack:
             current_node = stack.pop(self.index)  
 
-            if current_node in visited:
+            if current_node in self.explored:
                 continue
 
-            visited.append(current_node)
+            self.explored.append(current_node)
 
             if current_node.state in self.goal_states:
-                return visited
+                return self.explored
 
             for v in self.problem.graph_dict[current_node.state]:
                 if isinstance(v, list):
-                    new_node = Node(v[0], 0, 0, current_node, None)
-                    if new_node not in visited:
+                    new_node = Node(v[0], current_node.cost+v[1], 0, current_node, None)
+                    if new_node not in self.explored:
                         stack.append(new_node)
-        return []  
+        return self.explored 

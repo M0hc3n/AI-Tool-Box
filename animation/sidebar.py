@@ -3,11 +3,13 @@ import networkx as nx
 import animation
 import best_first_search
 import depth_breadth
+import depth_limited_search
 
-from Graph import CustomGraph
 from utils import Variants
 
 # Best_First_Search, Variants
+
+
 class SideBar(tk.Frame):
 
     def __init__(self, parent):
@@ -39,7 +41,6 @@ class SideBar(tk.Frame):
         self.target_node_label.grid(column=0, row=4)
         self.target_node_entry = tk.Entry(self)
         self.target_node_entry.grid(column=1, row=4)
-        
 
         self.path_cost_label = tk.Label(self, text="Path Cost:")
         self.path_cost_label.grid(column=0, row=5)
@@ -56,39 +57,58 @@ class SideBar(tk.Frame):
             self, text="Apply Search Algorithm", command=self.apply_algorithm)
 
         self.initial_node_label = tk.Label(self, text="Initial Node:")
-        self.initial_node_label.grid(column=0, row= 10)
+        self.initial_node_label.grid(column=0, row=10)
         self.initial_node_entry = tk.Entry(self)
-        self.initial_node_entry.grid(column=1, row= 10)
+        self.initial_node_entry.grid(column=1, row=10)
 
         self.add_initial_node = tk.Button(
             self, text="Set Initial", command=self.add_initial)
-        self.add_initial_node.grid(column=0, row=11, columnspan=2, sticky="nsew")
+        self.add_initial_node.grid(
+            column=0, row=11, columnspan=2, sticky="nsew")
 
         self.goal_node_label = tk.Label(self, text="Goal Node:")
         self.goal_node_label.grid(column=0, row=12)
         self.goal_node_entry = tk.Entry(self)
         self.goal_node_entry.grid(column=1, row=12)
-
         self.add_goal_button = tk.Button(
             self, text="Add Goal", command=self.add_goal)
-        self.add_goal_button.grid(column=0, row=13, columnspan=2, sticky="nsew")
+        self.remove_goal_button = tk.Button(
+            self, text="Remove Goal", command=self.remove_goal)
+        self.add_goal_button.grid(
+            column=0, row=13, columnspan=1, sticky="nsew")
+        self.remove_goal_button.grid(
+            column=1, row=13, columnspan=1, sticky="nsew")
 
         self.apply_algorithm_button.grid(
-            column=0, row=15, columnspan=2, sticky="nsew")
+            column=0, row=18, columnspan=2, sticky="nsew")
+        self.limit_label = tk.Label(self, text="Limit:")
+        self.limit_label.grid(column=0, row=20, columnspan=1, sticky="nsew")
+        self.limit_entry = tk.Entry(self)
+        self.limit_entry.grid(column=1, row=20, sticky="nsew")
 
     def add_goal(self):
-        self.parent.goal_states.append(self.goal_node_entry.get())
-        print('goal' ,self.parent.goal_states)
 
+        if (self.goal_node_entry.get() != self.parent.initial_state):
+            self.parent.goal_states.append(self.goal_node_entry.get())
+            print('goal', self.parent.goal_states)
+
+            self.parent._update_graph()
+        else:
+            print("Cannot set goal to be the initial state")
+
+    def remove_goal(self):
+        self.parent.goal_states.remove(self.goal_node_entry.get())
+        print('goal', self.parent.goal_states)
         self.parent._update_graph()
 
     def add_initial(self):
-        self.parent.initial_state = self.initial_node_entry.get()
-        self.parent._update_graph()
-
+        if (self.initial_node_entry.get() not in self.parent.goal_states):
+            self.parent.initial_state = self.initial_node_entry.get()
+            self.parent._update_graph()
 
     def add_node(self):
         node_name = self.node_name_entry.get()
+
         node_value = int(self.node_value_entry.get())
 
         self.parent.graph.add_node(node_name, value=node_value)
@@ -111,9 +131,9 @@ class SideBar(tk.Frame):
         self.parent._update_graph()
 
     def add_drop_down_menu(self):
-        
+
         self.options = {
-            "Breadth First Search": Variants.BFS ,
+            "Breadth First Search": Variants.BFS,
             "Depth First Search":  Variants.DFS,
             "Uniform Cost Search":  Variants.UCS,
             "Depth Limited":  Variants.DPL,
@@ -132,15 +152,18 @@ class SideBar(tk.Frame):
     def apply_algorithm(self):
 
         print(nx.spring_layout(self.parent.custom_graph.graph_nx))
-        if( self.options[self.clicked.get()] == Variants.DFS):
+        if (self.options[self.clicked.get()] == Variants.DFS):
             algo = depth_breadth.DepthBreadthFirstSearch(
-            self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.DFS)
-        elif ( self.options[self.clicked.get()] == Variants.BFS):
+                self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.DFS)
+        elif (self.options[self.clicked.get()] == Variants.BFS):
             algo = depth_breadth.DepthBreadthFirstSearch(
-            self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.BFS)
+                self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.BFS)
+        elif (self.options[self.clicked.get()] == Variants.DPL):
+            algo = depth_limited_search.DepthLimitedSearch(self.initial_node_entry.get(
+            ), self.parent.goal_states, problem=self.parent.custom_graph, limit=int(self.limit_entry.get()))
         else:
             algo = best_first_search.Best_First_Search(
                 self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
-        
+
         animate = animation.Animation(algo)
         animate.animation_pop_up()

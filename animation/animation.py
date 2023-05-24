@@ -1,5 +1,6 @@
 from matplotlib.backend_bases import NavigationToolbar2
 import networkx as nx
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import tkinter as tk
@@ -23,7 +24,7 @@ class Animation:
 
         currnet_node = path[-1]
         parent_path = [currnet_node]
-        
+
         while currnet_node.parent is not None:
             parent_path.append(currnet_node.parent)
             currnet_node = currnet_node.parent
@@ -55,7 +56,7 @@ class Animation:
         return path_history
 
     def node_colors(self, path, unpacked_parent_path):
-        return ['black' if node == self.problem.initial_node else 'yellow'
+        return ['orange' if node == self.problem.initial_node else 'green' if node.state in self.problem.goal_states else 'yellow'
                 if node.state in self.problem.goal_states
                 else 'violet' if node == path[-1] else 'green'
                 if (path[-1].state in self.problem.goal_states and node.state in unpacked_parent_path)else
@@ -71,6 +72,10 @@ class Animation:
             title += "A Star"
         elif (self.problem.algorithm == Variants.DFS):
             title += "DFS"
+        elif (self.problem.algorithm == Variants.DPL):
+            title += "DPL"
+        elif (self.problem.algorithm == Variants.BFS):
+            title += "BFS"
         title += "\n"
         title += f"->".join(self.get_ordered_nodes(path)[::-1])
         title += "\n"
@@ -78,23 +83,33 @@ class Animation:
 
         ax.set_title(title, fontsize=20)
 
+    def set_legend(self, ax):
+        color_dict = {'visited before': 'red', 'current node': 'violet',
+                      'visited now ': 'blue',
+                      'goal node': 'green', 'initial node': 'orange'}
+
+        legend_patches = [mpatches.Patch(
+            color=color, label=label) for label, color in color_dict.items()]
+
+        ax.legend(handles=legend_patches)
+
     def update(self, num, path_history, ax, G, pos):
 
         graph_dict = self.graph.graph_dict
 
-        if (not self.is_start):
-          # Get the current path
-            if (self.direction == 1):
-                self.frame_number += 1
-                self.frame_number %= len(path_history)
-            else:
-                self.frame_number -= 1
-                if (self.frame_number == -1):
-                    self.frame_number = 0
-
-        else:
-            self.is_start = False
-        path = path_history[self.frame_number]
+        # if (not self.is_start):
+        #  # Get the current path
+        #    if (self.direction == 1):
+        #        self.frame_number += 1
+        #        self.frame_number %= len(path_history)
+        #    else:
+        #        self.frame_number -= 1
+        #        if (self.frame_number == -1):
+        #            self.frame_number = 0
+#
+        # else:
+        #    self.is_start = False
+        path = path_history[num]
         ax.clear()
         #self.frame_number = num
 
@@ -104,7 +119,9 @@ class Animation:
 
         # Background nodes and edges(That is the nodes and edges that are not visited yet)
         null_nodes = nx.draw_networkx_nodes(
-            G, pos=pos, nodelist=set(G.nodes()), node_color="black", ax=ax, node_size=1200)
+            G, pos=pos, nodelist=set(G.nodes())-set(self.problem.goal_states), node_color="black", ax=ax, node_size=1200)
+        nx.draw_networkx_nodes(
+            G, pos=pos, nodelist=set(self.problem.goal_states), node_color="green", ax=ax, node_size=1200)
 
         node_labels = CustomGraph.get_node_labeles_heuristic(
             problem=graph_dict)
@@ -139,16 +156,16 @@ class Animation:
             G, pos, edge_labels, font_size=10, font_family="sans-serif")
 
         self.set_title(ax, path[-1].cost, path)
-        if (self.direction == 0):
-            if (self.is_rendered == False):
-                self.is_rendered = True
-                self.direction = 1
+        self.set_legend(ax)
+        # if (self.direction == 0):
+        #    if (self.is_rendered == False):
+        #        self.is_rendered = True
+        #        self.direction = 1
 
     def backward(self):
         self.is_rendered = False
         self.direction = 0
-    
-        
+
     def animation_pop_up(self):
         G = self.graph.get_nx_graph()
         # print(G.nodes())
@@ -161,8 +178,10 @@ class Animation:
 
         # creating the Tkinter Window
         root = tk.Tk()
+
         def kill():
-          root.destroy()
+            root.destroy()
+            root.quit()
         root.geometry("1920x1080")
         canvas = tk.Canvas(root)
         canvas.pack()
@@ -177,7 +196,7 @@ class Animation:
 
         backward_button = pause_button = tk.Button(
             canvas, text=" Backward", command=self.backward)
-        backward_button.pack()
+        # backward_button.pack()
 
         resume_button.pack()
 
