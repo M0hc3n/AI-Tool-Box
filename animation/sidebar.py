@@ -118,8 +118,10 @@ class SideBar(tk.Frame):
     def add_node(self):
         node_name = self.node_name_entry.get()
 
-        node_value = int(self.node_value_entry.get())
-
+        try:
+            node_value = int(self.node_value_entry.get())
+        except:
+            node_value = float("inf")
         self.parent.graph.add_node(node_name, value=node_value)
         self.parent.custom_graph.add_node(node_name, node_value)
 
