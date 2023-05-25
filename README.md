@@ -1,1 +1,6 @@
-# this is the repo of intro to AI's tool box
+# AI Tool Box
+
+## Get Started
+`
+$ pip install -r requirements.txt
+`
