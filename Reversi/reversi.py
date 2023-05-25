@@ -1,3 +1,7 @@
+# this code powers the game's GUI 
+# it had been inspired by: https://github.com/Teifion/Reversi
+# the latter version had been refactored and customized to serve our needs
+
 import ai
 
 
