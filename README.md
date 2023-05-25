@@ -15,4 +15,5 @@ $ pip install -r requirements.txt
 
 ## To run Any of the mentioned Parts:
 `$ python main.py`
-
+or 
+`$ python3 main.py`
