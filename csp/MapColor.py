@@ -8,8 +8,6 @@ class MapColor:
 
         self.generate_colors(num_of_colors)
 
-        print(self.graph)
-
     # generate a set of colors based on the given number
     def generate_colors(self,num_colors):
         all_colors = webcolors.CSS3_NAMES_TO_HEX
@@ -17,15 +15,15 @@ class MapColor:
         self.set_of_colors = set(color_names)
 
 
-    def check_valid(self):
+    def is_valid_graph(self):
         for node,nexts in self.graph.items():
             # check that the format of graph is valid
             assert(node not in nexts) 
             for next in nexts:
-                # check that if A has B as a neighbor, then B has as a neighbor
+                # check that if A has B as a neighbbor, then B has as a neighbor
                 assert(next in self.graph and node in self.graph[next]) 
 
-    def check_solution(self, solution):
+    def is_valid_solution(self, solution):
         if solution is not None:
             for node,nexts in self.graph.items():
                 assert(node in solution)
@@ -37,64 +35,59 @@ class MapColor:
         else: 
             return False
 
-    def find_best_candidate(self, guesses):
+
+    # the logic of this function was inspired by: 
+    # https://codereview.stackexchange.com/users/9452/sylvaind
+    def find_best_candidate(self, assignments):
 
         # we use -1 * each metric so that, when sorting, we favourite the neighbor
         # with the most number of colored neighbors (i.e: least number of possible colors)
         # in case of a tie, we will favourite the second element of the tuple
         # which stands for the number of possible colors, (the most you have, the favourite you are to be chosen as a second option)  
-        candidates_with_add_info = [
+        all_possible_candidates = [
             (
             # this gets the number of colored neighbors == number of forbidden colors
-            -len({guesses[neigh] for neigh in self.graph[n] if neigh     in guesses}), 
+            -len({assignments[neigh] for neigh in self.graph[n] if neigh     in assignments}), 
             # this gets the number uncolored neighbors == number of possible colors
-            -len({neigh          for neigh in self.graph[n] if neigh not in guesses}), # minus nb_uncolored_neighbour
+            -len({neigh          for neigh in self.graph[n] if neigh not in assignments}), # minus nb_uncolored_neighbour
             n
-            ) for n in self.graph if n not in guesses]
-        print(candidates_with_add_info)
-        candidates_with_add_info.sort()
-        print(candidates_with_add_info)
-        candidates = [n for _,_,n in candidates_with_add_info]
+            ) for n in self.graph if n not in assignments]
+        all_possible_candidates.sort()
+        candidates = [node for _,_,node in all_possible_candidates]
     
         if candidates:
             candidate = candidates[0]
-            assert(candidate not in guesses)
+            assert(candidate not in assignments)
             return candidate
 
-        assert(set(self.graph.keys()) == set(guesses.keys()))
+        assert(set(self.graph.keys()) == set(assignments.keys()))
         return None
 
 
-    def solve(self, guesses, depth):
-        n = self.find_best_candidate( guesses)
+    def solve(self, assignments, depth):
+        state = self.find_best_candidate( assignments)
 
         # basecase, in case no best candidates remaining to be assigned
-        if n is None:
-            return guesses
+        if state is None:
+            return assignments
 
-        for c in self.set_of_colors - {guesses[neigh] for neigh in self.graph[n] if neigh in guesses}:
-            assert(n not in guesses)
-            assert(all((neigh not in guesses or guesses[neigh] != c) for neigh in self.graph[n]))
-            guesses[n] = c
-            indent = '  '*depth
-            print ("%sTrying to give color %s to %s" % (indent,c,n))
+        for color in self.set_of_colors - {assignments[neighbor] for neighbor in self.graph[state] if neighbor in assignments}:
+            assert(state not in assignments)
+            assert(all((neighbor not in assignments or assignments[neighbor] != color) for neighbor in self.graph[state]))
+            assignments[state] = color
 
-            if self.solve( guesses, depth+1):
-                print ("%sGave color %s to %s" % (indent,c,n))
-                return guesses
-
+            if self.solve( assignments, depth+1):
+                return assignments
             else:
-                del guesses[n]
-                print ("%sCannot give color %s to %s" % (indent,c,n))
+                del assignments[state]
 
         return None
 
-    def solve_problem(self):
-        self.check_valid()
-        solution = self.solve( guesses=dict(), depth=0)
+    def color_map(self):
+        self.is_valid_graph()
+        solution = self.solve( assignments=dict() , depth=0 )
         
-        print(solution)
-        if( not self.check_solution(solution) ):
+        if( not self.is_valid_solution( solution ) ):
             return False
 
         return solution

@@ -77,10 +77,7 @@ class SideBar(tk.Frame):
     
 
     def solve_csp(self):
-        print(
-            nx.to_dict_of_dicts(self.parent.graph)
-        )
-
+        
         self.feedback_label.config(text="")
 
         map_graph = self.convert_top_map_graph()
@@ -88,7 +85,7 @@ class SideBar(tk.Frame):
 
         map_coloring_problem = MapColor(map_graph, number_of_colors)
 
-        result = map_coloring_problem.solve_problem()
+        result = map_coloring_problem.color_map()
 
         if(result == False):
             self.feedback_label.config(text="Unsufficient Number of colors")
