@@ -99,8 +99,8 @@ class SideBar(tk.Frame):
             self.parent.goal_states.append(self.goal_node_entry.get())
             print('goal', self.parent.goal_states)
             node_name = self.goal_node_entry.get()
-            self.parent.graph.add_node(node_name, float("inf"))
-            self.parent.custom_graph.add_node(node_name, float("inf"))
+            self.parent.graph.add_node(node_name, value=0)
+            self.parent.custom_graph.add_node(node_name, 0)
             self.parent._update_graph()
         else:
             print("Cannot set goal to be the initial state")
@@ -152,8 +152,6 @@ class SideBar(tk.Frame):
             "Greedy Best First Search": Variants.GREEDY,
             "A* Star": Variants.A_star,
             "Beam Search": Variants.BEAM,
-            "Hill climbing": Variants.HILL
-
         }
 
         self.clicked = tk.StringVar()
@@ -165,7 +163,6 @@ class SideBar(tk.Frame):
 
     def apply_algorithm(self):
 
-        print(nx.spring_layout(self.parent.custom_graph.graph_nx))
         if (self.options[self.clicked.get()] == Variants.DFS):
             algo = depth_breadth.DepthBreadthFirstSearch(
                 self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=Variants.DFS)
@@ -178,9 +175,6 @@ class SideBar(tk.Frame):
         elif (self.options[self.clicked.get()] == Variants.BEAM):
             algo = beam_search.BeamSearch(self.initial_node_entry.get(
             ), self.parent.goal_states, problem=self.parent.custom_graph, width=int(self.limit_entry.get()))
-        elif (self.options[self.clicked.get()] == Variants.HILL):
-            algo = beam_search.BeamSearch(self.initial_node_entry.get(
-            ), self.parent.goal_states, problem=self.parent.custom_graph, width=1)
         elif (self.options[self.clicked.get()] == Variants.IDS):
             algo = iterative_deepening_search.IterativeDeepeningSearch(self.initial_node_entry.get(
             ), self.parent.goal_states, problem=self.parent.custom_graph, max_depth=int(self.limit_entry.get()), step=int(self.step_entry.get()))
