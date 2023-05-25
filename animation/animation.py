@@ -105,14 +105,21 @@ class Animation:
         elif (self.problem.algorithm == Variants.DFS):
             title += "DFS"
         elif (self.problem.algorithm == Variants.DPL):
-            title += "DPL"
+            title += "DPL with Max depth : " + str(self.problem.limit)
         elif (self.problem.algorithm == Variants.BFS):
             title += "BFS"
         elif (self.problem.algorithm == Variants.BEAM):
             title += "BEAM" + " with width: " + str(self.problem.beam_width)
+        elif (self.problem.algorithm == Variants.IDS):
+            title += "Iterative deepening Search" + \
+                " with max depth: " + \
+                str(self.problem.max_depth) + \
+                " and step of : "+str(self.problem.step)
+
         title += "\n"
-        title += f"->".join(self.get_ordered_nodes(path)[::-1])
-        title += "\n"
+        if (self.problem.algorithm != Variants.BEAM):
+            title += f"->".join(self.get_ordered_nodes(path)[::-1])
+            title += "\n"
         title += f"path cost: {cost}"
 
         ax.set_title(title, fontsize=20)

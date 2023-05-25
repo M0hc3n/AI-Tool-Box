@@ -5,6 +5,7 @@ import best_first_search
 import depth_breadth
 import depth_limited_search
 import beam_search
+import iterative_deepening_search
 
 from utils import Variants
 
@@ -86,6 +87,11 @@ class SideBar(tk.Frame):
         self.limit_label.grid(column=0, row=20, columnspan=1, sticky="nsew")
         self.limit_entry = tk.Entry(self)
         self.limit_entry.grid(column=1, row=20, sticky="nsew")
+
+        self.step_label = tk.Label(self, text="step:")
+        self.step_label.grid(column=0, row=21, columnspan=1, sticky="nsew")
+        self.step_entry = tk.Entry(self)
+        self.step_entry.grid(column=1, row=21, sticky="nsew")
 
     def add_goal(self):
 
@@ -171,6 +177,9 @@ class SideBar(tk.Frame):
         elif (self.options[self.clicked.get()] == Variants.HILL):
             algo = beam_search.BeamSearch(self.initial_node_entry.get(
             ), self.parent.goal_states, problem=self.parent.custom_graph, width=1)
+        elif (self.options[self.clicked.get()] == Variants.IDS):
+            algo = iterative_deepening_search.IterativeDeepeningSearch(self.initial_node_entry.get(
+            ), self.parent.goal_states, problem=self.parent.custom_graph, max_depth=int(self.limit_entry.get()), step=int(self.step_entry.get()))
         else:
             algo = best_first_search.Best_First_Search(
                 self.initial_node_entry.get(), self.parent.goal_states, problem=self.parent.custom_graph, algorithm=self.options[self.clicked.get()])
