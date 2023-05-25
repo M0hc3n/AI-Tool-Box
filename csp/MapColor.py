@@ -47,11 +47,11 @@ class MapColor:
         all_possible_candidates = [
             (
             # this gets the number of colored neighbors == number of forbidden colors
-            -len({assignments[neigh] for neigh in self.graph[n] if neigh     in assignments}), 
+            -len({assignments[neigh] for neigh in self.graph[node] if neigh     in assignments}), 
             # this gets the number uncolored neighbors == number of possible colors
-            -len({neigh          for neigh in self.graph[n] if neigh not in assignments}), # minus nb_uncolored_neighbour
-            n
-            ) for n in self.graph if n not in assignments]
+            -len({neigh          for neigh in self.graph[node] if neigh not in assignments}), # minus nb_uncolored_neighbour
+            node
+            ) for node in self.graph if node not in assignments]
         all_possible_candidates.sort()
         candidates = [node for _,_,node in all_possible_candidates]
     
@@ -64,8 +64,8 @@ class MapColor:
         return None
 
 
-    def solve(self, assignments, depth):
-        state = self.find_best_candidate( assignments)
+    def solve(self, assignments):
+        state = self.find_best_candidate( assignments )
 
         # basecase, in case no best candidates remaining to be assigned
         if state is None:
@@ -76,7 +76,7 @@ class MapColor:
             assert(all((neighbor not in assignments or assignments[neighbor] != color) for neighbor in self.graph[state]))
             assignments[state] = color
 
-            if self.solve( assignments, depth+1):
+            if self.solve( assignments ):
                 return assignments
             else:
                 del assignments[state]
@@ -85,7 +85,7 @@ class MapColor:
 
     def color_map(self):
         self.is_valid_graph()
-        solution = self.solve( assignments=dict() , depth=0 )
+        solution = self.solve( assignments=dict() )
         
         if( not self.is_valid_solution( solution ) ):
             return False
