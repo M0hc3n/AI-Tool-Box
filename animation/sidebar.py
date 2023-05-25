@@ -98,7 +98,9 @@ class SideBar(tk.Frame):
         if (self.goal_node_entry.get() != self.parent.initial_state):
             self.parent.goal_states.append(self.goal_node_entry.get())
             print('goal', self.parent.goal_states)
-
+            node_name = self.goal_node_entry.get()
+            self.parent.graph.add_node(node_name, float("inf"))
+            self.parent.custom_graph.add_node(node_name, float("inf"))
             self.parent._update_graph()
         else:
             print("Cannot set goal to be the initial state")

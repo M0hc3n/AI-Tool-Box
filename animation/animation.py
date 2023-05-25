@@ -92,7 +92,7 @@ class Animation:
                     'blue' if node.state in unpacked_parent_path else 'red' for node in path]
         else:
             current_nodes = self.get_nodes_withs_same_depth(path, depth)
-            return ['orange' if node == self.problem.initial_node else 'violet' if node in current_nodes else 'green' if node.state in self.problem.goal_states else 'blue' if node.state in unpacked_parent_path else 'red' for node in path]
+            return ['orange' if node == self.problem.initial_node else 'violet' if node in current_nodes else 'green' if (node.state in self.problem.goal_states )else 'blue' if node.state in unpacked_parent_path else 'red' for node in path]
 
     def set_title(self, ax, cost, path):
         title = ""
@@ -127,7 +127,7 @@ class Animation:
     def set_legend(self, ax):
         color_dict = {'visited before': 'red', 'current node': 'violet',
                       'visited now ': 'blue',
-                      'goal node': 'green', 'initial node': 'orange'}
+                      'goal node': 'green', 'initial node': 'orange', 'not visited': 'black'}
 
         legend_patches = [mpatches.Patch(
             color=color, label=label) for label, color in color_dict.items()]
