@@ -12,5 +12,4 @@ class Variants(Enum):
     DPL = 6
     IDS = 7
     BEAM = 8
-    HILL = 9
 
