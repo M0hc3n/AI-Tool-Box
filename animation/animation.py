@@ -22,45 +22,77 @@ class Animation:
 
     def get_parent_path(self, path):
 
-        currnet_node = path[-1]
-        parent_path = [currnet_node]
+        current_node = path[-1]
+        parent_path = [current_node]
 
-        while currnet_node.parent is not None:
-            parent_path.append(currnet_node.parent)
-            currnet_node = currnet_node.parent
+        while current_node.parent is not None:
+            parent_path.append(current_node.parent)
+            current_node = current_node.parent
 
         return [[node.parent.state if node.parent is not None else node.state,
                  node.state] for node in parent_path]
 
-    def get_ordered_nodes(self, path):
-        currnet_node = path[-1]
-        parent_path = [currnet_node.state]
+    def get_beam_parent_paths(self, path, depth):
+        nodes = self.get_nodes_withs_same_depth(path, depth)
 
-        while currnet_node.parent is not None:
-            parent_path.append(currnet_node.parent.state)
-            currnet_node = currnet_node.parent
+        result = []
+        for current_node in nodes:
+            parent_path = [current_node]
+            while current_node.parent is not None:
+                parent_path.append(current_node.parent)
+                current_node = current_node.parent
+                result.extend([[node.parent.state if node.parent is not None else node.state,
+                                node.state] for node in parent_path]
+                              )
+
+        return result
+
+    def get_ordered_nodes(self, path):
+        current_node = path[-1]
+        parent_path = [current_node.state]
+
+        while current_node.parent is not None:
+            parent_path.append(current_node.parent.state)
+            current_node = current_node.parent
         return parent_path
 
     def get_path_history(self):
 
         path = self.problem.search()
-
-        # Generate animation frames
         path_history = []
-        if path is not None:
-            for i in range(len(path)):
-                partial_path = path[:i+1]
+        if (self.problem.algorithm != Variants.BEAM):
+            # Generate animation frames
+            if path is not None:
+                for i in range(len(path)):
+                    partial_path = path[:i+1]
 
+                    path_history.append(partial_path)
+
+        else:
+            # for beam search the history is generated based on the depht of nodes
+            # the max depth if the one of the last node in the path returned from the algorithm
+            for i in range(path[-1].depth+1):
+                partial_path = self.get_nodes_withs_same_depth(path, i)
                 path_history.append(partial_path)
-
         return path_history
 
-    def node_colors(self, path, unpacked_parent_path):
-        return ['orange' if node == self.problem.initial_node else 'green' if node.state in self.problem.goal_states else 'yellow'
-                if node.state in self.problem.goal_states
-                else 'violet' if node == path[-1] else 'green'
-                if (path[-1].state in self.problem.goal_states and node.state in unpacked_parent_path)else
-                'blue' if node.state in unpacked_parent_path else 'red' for node in path]
+    def get_nodes_withs_same_depth(self, nodes, depth):
+        result = []
+        for node in nodes:
+            if node.depth == depth:
+                result.append(node)
+        return result
+
+    def node_colors(self, path, unpacked_parent_path, depth=0):
+        if (self.problem.algorithm != Variants.BEAM):
+            return ['orange' if node == self.problem.initial_node else 'green' if node.state in self.problem.goal_states else 'yellow'
+                    if node.state in self.problem.goal_states
+                    else 'violet' if node == path[-1] else 'green'
+                    if (path[-1].state in self.problem.goal_states and node.state in unpacked_parent_path)else
+                    'blue' if node.state in unpacked_parent_path else 'red' for node in path]
+        else:
+            current_nodes = self.get_nodes_withs_same_depth(path, depth)
+            return ['orange' if node == self.problem.initial_node else 'violet' if node in current_nodes else 'green' if node.state in self.problem.goal_states else 'blue' if node.state in unpacked_parent_path else 'red' for node in path]
 
     def set_title(self, ax, cost, path):
         title = ""
@@ -76,6 +108,8 @@ class Animation:
             title += "DPL"
         elif (self.problem.algorithm == Variants.BFS):
             title += "BFS"
+        elif (self.problem.algorithm == Variants.BEAM):
+            title += "BEAM" + " with width: " + str(self.problem.beam_width)
         title += "\n"
         title += f"->".join(self.get_ordered_nodes(path)[::-1])
         title += "\n"
@@ -115,7 +149,7 @@ class Animation:
 
         # drawing the base edges
         nx.draw_networkx_edges(G, pos=pos, edgelist=G.edges(),
-                               ax=ax, edge_color="gray", width=6, alpha=0.5,  style="dashed")
+                               ax=ax, edge_color="gray", width=6, alpha=0.5)
 
         # Background nodes and edges(That is the nodes and edges that are not visited yet)
         null_nodes = nx.draw_networkx_nodes(
@@ -135,7 +169,7 @@ class Animation:
             element for trace in parent_path for element in trace]
 
         query_nodes = nx.draw_networkx_nodes(
-            G, pos=pos, nodelist=[node.state for node in path], node_color=self.node_colors(path, unpacked_parent_path),
+            G, pos=pos, nodelist=[node.state for node in path], node_color=self.node_colors(path, unpacked_parent_path, depth=num),
             ax=ax, node_size=1200)
         query_nodes.set_edgecolor("white")
 
@@ -143,12 +177,16 @@ class Animation:
                      node.state] for node in path]
 
         # color any other path not from the parent node wtih the red color
-        nx.draw_networkx_edges(G, pos=pos, edgelist=[v for v in edgelist if v not in parent_path],
-                               edge_color="red", ax=ax, width=6, alpha=0.5,  style="dashed")
+        if (self.problem.algorithm != Variants.BEAM):
+            nx.draw_networkx_edges(G, pos=pos, edgelist=[v for v in edgelist if v not in parent_path],
+                                   edge_color="red", ax=ax, width=6, alpha=0.5)
 
-        # the yellow path from parent
-        nx.draw_networkx_edges(G, pos=pos, edgelist=parent_path, width=6, alpha=0.5,  style="dashed",
-                               edge_color=["green" if path[-1].state in self.problem.goal_states else "blue"], ax=ax)
+            nx.draw_networkx_edges(G, pos=pos, edgelist=parent_path, width=6, alpha=0.5,
+                                   edge_color=["green" if path[-1].state in self.problem.goal_states else "blue"], ax=ax)
+        else:
+            beam_parent_path = self.get_beam_parent_paths(path, num)
+            nx.draw_networkx_edges(G, pos=pos, edgelist=beam_parent_path, width=6, alpha=0.5,
+                                   edge_color=["green" if path[-1].state in self.problem.goal_states else "blue"], ax=ax)
 
         # drawing the costs
         edge_labels = nx.get_edge_attributes(G, "weight")

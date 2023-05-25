@@ -5,15 +5,14 @@ from utils import Variants
 
 
 class BeamSearch:
-  
 
-    def __init__(self, initial_node, goal_states, problem, algorithm=Variants.BEAM,width=2):
+    def __init__(self, initial_node, goal_states, problem, algorithm=Variants.BEAM, width=2):
 
         self.initial_node = Node(
-            initial_node, 0, score=0 , parent=None, action=None)
+            initial_node, 0, score=0, parent=None, action=None, depth=0)
         self.goal_states = goal_states
         self.problem = problem
-        self.explored = []  
+        self.explored = []
         self.algorithm = algorithm
         self.beam_width = width
 
@@ -29,17 +28,17 @@ class BeamSearch:
             self.problem.graph_dict[v[0]])
         score = min_heuristic
         return Node(v[0], current_node.cost+v[1], score,
-                    parent=current_node, action=f"({current_node.state},{v[0]})")
-    
+                    parent=current_node, action=f"({current_node.state},{v[0]})", depth=current_node.depth+1)
+
     def search(self):
         # back_tracking_set=[]
-        frontier = [] 
+        frontier = []
         heapq.heappush(frontier, self.initial_node)
-        explored = []
+        explored = []  # here explored is a list of lists
 
         while (True):
             if (len(frontier) == 0):
-                return None
+                return explored
 
             current_node = heapq.heappop(frontier
                                          )
@@ -60,10 +59,10 @@ class BeamSearch:
                     elif (child_node in frontier and child_node.score < self.get_node_score(child_node, frontier)):
                         frontier.remove(child_node)
                         heapq.heappush(frontier, child_node)
-            counter=0
+            counter = 0
             oldopen = frontier
             frontier = []
-            while(counter <= self.beam_width):
+            while (counter < self.beam_width and len(oldopen) > 0):
                 node = heapq.heappop(oldopen)
                 heapq.heappush(frontier, node)
                 counter += 1
